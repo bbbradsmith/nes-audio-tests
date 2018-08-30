@@ -314,7 +314,15 @@ INES2_CHRBAT    = 0
 .word 19997 ; PAL speed
 .byte INES2_REGION ; PAL/NTSC bits
 .byte NSF_EXPANSION ; expansion bits
-.byte 0,0,0,0 ; pad to $80
-.assert * = $80, error, "NSF header has incorrect length."
+.byte 0
+.import __ROM_BANK_START__
+.import __ROM_BANK_LAST__
+.import __NSFE_SUFFIX_SIZE__
+NSF_DATA_LEN = (__ROM_BANK_LAST__ - __ROM_BANK_START__) * (__NSFE_SUFFIX_SIZE__ > 0)
+.byte <(NSF_DATA_LEN >>  0)
+.byte <(NSF_DATA_LEN >>  8)
+.byte <(NSF_DATA_LEN >> 16)
+.segment "NSFE_SUFFIX"
+; empty suffix so that it's always defined
 
 ; end of file
