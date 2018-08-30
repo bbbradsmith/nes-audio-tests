@@ -4,17 +4,17 @@
 ;   https://github.com/bbbradsmith/nes-audio-tests
 ;
 
-.define NSF_TITLE      "db_5b test"
-.define NSF_ARTIST     "Brad Smith"
-.define NSF_COPYRIGHT  "2018 nes-audio-tests"
+.include "swap.inc"
+
+NSF_STRINGS "db_5b test", "Brad Smith", "2018 nes-audio-tests"
 NSF_EXPANSION = %00100000
+INES2_REGION = 0 ; NTSC only
 
 .export test_registers
 .export test_routines
 .export test_data
 .exportzp NSF_EXPANSION
-
-.include "swap.inc"
+.exportzp INES2_REGION
 
 .segment "SWAP"
 
@@ -46,14 +46,5 @@ init_5b:
 		cpx #$10
 		bcc :-
 	rts
-
-.segment "NSF_HEADER1"
-.byte NSF_TITLE
-.res 32 - .strlen(NSF_TITLE)
-.byte NSF_ARTIST
-.res 32 - .strlen(NSF_ARTIST)
-.byte NSF_COPYRIGHT
-.res 32 - .strlen(NSF_COPYRIGHT)
-.assert * = $6E, error, "NSF strings may be too long?"
 
 ; end of file

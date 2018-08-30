@@ -9,6 +9,17 @@ DELAY    = $61 ; delay by frame count (arg: frames, 0 = 256)
 INIT_APU = $62 ; initialize APU (arg: ignored)
 LOOP     = $63 ; return to test_data (arg: ignored, unnecessary)
 
+.macro NSF_STRINGS title_, artist_, copyright_
+	.segment "NSF_HEADER1"
+	.byte title_
+	.res 32 - .strlen(title_)
+	.byte artist_
+	.res 32 - .strlen(artist_)
+	.byte copyright_
+	.res 32 - .strlen(copyright_)
+	.assert * = $6E, error, "NSF_STRINGS too long?"
+.endmacro
+
 ; internal
 .global swap_data
 .global swap_internal

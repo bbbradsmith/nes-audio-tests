@@ -8,6 +8,8 @@
 .import test_routines
 .import test_data
 .importzp NSF_EXPANSION
+.import INES_MAPPER
+.importzp INES2_REGION
 
 .include "swap.inc"
 
@@ -259,7 +261,6 @@ nsf_play:
 
 .segment "NES_HEADER"
 .import __ROM_BANK_SIZE__
-INES_MAPPER     = 0
 INES_MIRROR     = 0 ; 0=vertical nametables, 1=horizontal
 INES_PRG_16K    = 1 ; 16K
 INES_CHR_8K     = 0
@@ -270,18 +271,17 @@ INES2_PRGRAM    = 0 ; x: 2^(6+x) bytes (0 for none)
 INES2_PRGBAT    = 0
 INES2_CHRRAM    = 7
 INES2_CHRBAT    = 0
-INES2_REGION    = 2 ; 0=NTSC, 1=PAL, 2=Dual
 .byte 'N', 'E', 'S', $1A ; ID
 .byte <INES_PRG_16K
 .byte INES_CHR_8K
-.byte INES_MIRROR | (INES_BATTERY << 1) | ((INES_MAPPER & $f) << 4)
+.byte INES_MIRROR | (INES_BATTERY << 1) | ((<INES_MAPPER & $f) << 4)
 .byte (<INES_MAPPER & %11110000) | INES2
 ; iNES 2 section
-.byte (INES2_SUBMAPPER << 4) | (INES_MAPPER>>8)
+.byte (INES2_SUBMAPPER << 4) | <(INES_MAPPER>>8)
 .byte ((INES_CHR_8K >> 8) << 4) | (INES_PRG_16K >> 8)
 .byte (INES2_PRGBAT << 4) | INES2_PRGRAM
 .byte (INES2_CHRBAT << 4) | INES2_CHRRAM
-.byte INES2_REGION
+.byte INES2_REGION ; 0 = NTSC, 1 = PAL, 2 = Dual
 .byte $00 ; VS system
 .byte $00, $00 ; padding/reserved
 .assert * = 16, error, "NES header must be 16 bytes."
@@ -297,7 +297,7 @@ INES2_REGION    = 2 ; 0=NTSC, 1=PAL, 2=Dual
 .byte $01 ; version
 .byte 1 ; songs
 .byte 1 ; starting song
-.word $C000 ; LOAD
+.word $E000 ; LOAD
 .word nsf_init ; INIT
 .word nsf_play ; PLAY
 ;.segment "NSF_HEADER1"
@@ -312,7 +312,7 @@ INES2_REGION    = 2 ; 0=NTSC, 1=PAL, 2=Dual
 .word 16639 ; NTSC speed
 .byte 0,0,0,0,0,0,0,0
 .word 19997 ; PAL speed
-.byte %00000010 ; PAL/NTSC bits
+.byte INES2_REGION ; PAL/NTSC bits
 .byte NSF_EXPANSION ; expansion bits
 .byte 0,0,0,0 ; pad to $80
 .assert * = $80, error, "NSF header has incorrect length."
