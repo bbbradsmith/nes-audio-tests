@@ -38,6 +38,6 @@ LOOP     = $63 ; return to test_data (arg: ignored, unnecessary)
 .globalzp read_ptr
 .globalzp write_ptr
 .globalzp swap_register ; STY abs, RTS
-.globalzp swap_internal ; JMP abs
+.globalzp swap_routine ; JMP abs
 
 ; end of file

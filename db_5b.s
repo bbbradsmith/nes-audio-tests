@@ -4,15 +4,15 @@
 ;   https://github.com/bbbradsmith/nes-audio-tests
 ;
 
-NSF_TITLE = "db_5b test"
-NSF_ARTIST = "Brad Smith"
-NSF_COPYRIGHT = "2018 nes-audio-tests"
+.define NSF_TITLE      "db_5b test"
+.define NSF_ARTIST     "Brad Smith"
+.define NSF_COPYRIGHT  "2018 nes-audio-tests"
 NSF_EXPANSION = %00100000
 
 .export test_registers
 .export test_routines
 .export test_data
-.export NSF_EXPANSION
+.exportzp NSF_EXPANSION
 
 .include "swap.inc"
 
@@ -30,7 +30,7 @@ INIT_5B = $40
 
 test_data:
 .byte BUZZ, 50
-.byte APU_INIT, 0
+.byte INIT_APU, 0
 .byte INIT_5B, 0
 .byte DELAY, 60
 ; TODO

@@ -1,33 +1,34 @@
 ;
 ; swap.s
 ;   hotswap test common code
+;   https://github.com/bbbradsmith/nes-audio-tests
 ;
 
 .import test_registers
 .import test_routines
 .import test_data
-.import NSF_EXPANSION
+.importzp NSF_EXPANSION
 
 .include "swap.inc"
 
 .segment "ZEROPAGE"
-read_ptr: .res 2
-write_ptr: .res 2
-swap_register: .res 4 ; self modifying register write (STY abs, RTS)
-swap_internal: .res 3 ; self modifying jsr (JMP abs)
+read_ptr:       .res 2
+write_ptr:      .res 2
+swap_register:  .res 4 ; self modifying register write (STY abs, RTS)
+swap_routine:   .res 3 ; self modifying jsr (JMP abs)
 
 .segment "SWAP"
 
 swap_data: ; startup buzz and wait for swap
-.byte BUZZ, 109 ; half second buzz
+.byte BUZZ, 100 ; half second buzz
 .byte DELAY, 0 ; 256 frame delay
 .byte LOOP
 
 swap_internal:
-	.word swap_delay
-	.word swap_buzz
-	.word swap_init_apu
-	.word swap_loop
+.word swap_buzz
+.word swap_delay
+.word swap_init_apu
+.word swap_loop
 
 swap:
 	; lda 0
@@ -57,26 +58,26 @@ swap:
 	:
 	cpx #($40 * 2) ; $20-3F = test_registers
 	bcs :+
-		lda test_registers+0, X
+		lda test_registers-($20*2)+0, X
 		sta swap_register+1
-		lda test_registers+1, X
+		lda test_registers-($20*2)+1, X
 		sta swap_register+2
 		jsr swap_register
 		jmp swap
 	:
 	cpx #($60 * 2) ; $40-5F = test_routines
 	bcs :+
-		lda test_routines+0, X
+		lda test_routines-($40*2)+0, X
 		sta swap_routine+1
-		lda test_routines+1, X
+		lda test_routines-($40*2)+1, X
 		sta swap_routine+2
 		jsr swap_routine
 		jmp swap
 	:
 	;                $60-7F = internal routines
-		lda swap_internal+0, X
+		lda swap_internal-($60*2)+0, X
 		sta swap_routine+1
-		lda swap_internal+1, X
+		lda swap_internal-($60*2)+1, X
 		sta swap_routine+2
 		jsr swap_routine
 		jmp swap
@@ -110,13 +111,10 @@ swap_delay_24:    jsr swap_delay_12
 swap_delay_12:    rts
 
 swap_delay:
-	cpy #0
-	beq :++
 	:
 		jsr swap_delay_frame
 		dey
-		beq :-
-	:
+		bne :-
 	rts
 
 swap_buzz:
@@ -160,7 +158,7 @@ swap_loop:
 
 .segment "SHARED"
 
-load_swap:
+swap_load:
 	; copy RAM code
 	.import __SWAP_LOAD__
 	.import __SWAP_RUN__
@@ -197,7 +195,7 @@ load_swap:
 	lda #$8C ; STY abs
 	sta swap_register+0
 	lda #$60 ; RTS
-	sta stap_register+3
+	sta swap_register+3
 	lda #$4C ; JMP abs
 	sta swap_routine+0
 	rts
@@ -263,7 +261,7 @@ nsf_play:
 .import __ROM_BANK_SIZE__
 INES_MAPPER     = 0
 INES_MIRROR     = 0 ; 0=vertical nametables, 1=horizontal
-INES_PRG_16K    = __ROM_BANK_SIZE__ / $4000
+INES_PRG_16K    = 1 ; 16K
 INES_CHR_8K     = 0
 INES_BATTERY    = 0
 INES2           = %00001000 ; NES 2.0 flag for bit 7
@@ -274,7 +272,7 @@ INES2_CHRRAM    = 7
 INES2_CHRBAT    = 0
 INES2_REGION    = 2 ; 0=NTSC, 1=PAL, 2=Dual
 .byte 'N', 'E', 'S', $1A ; ID
-.byte INES_PRG_16K
+.byte <INES_PRG_16K
 .byte INES_CHR_8K
 .byte INES_MIRROR | (INES_BATTERY << 1) | ((INES_MAPPER & $f) << 4)
 .byte (<INES_MAPPER & %11110000) | INES2
@@ -297,9 +295,9 @@ INES2_REGION    = 2 ; 0=NTSC, 1=PAL, 2=Dual
 .segment "NSF_HEADER0"
 .byte 'N', 'E', 'S', 'M', $1A ; ID
 .byte $01 ; version
-.byte TRACK_ORDER_LENGTH ; songs
+.byte 1 ; songs
 .byte 1 ; starting song
-.word $8000 ; LOAD
+.word $C000 ; LOAD
 .word nsf_init ; INIT
 .word nsf_play ; PLAY
 ;.segment "NSF_HEADER1"
@@ -312,7 +310,7 @@ INES2_REGION    = 2 ; 0=NTSC, 1=PAL, 2=Dual
 ;.assert * = $6E, error, "NSF strings may be too long?"
 .segment "NSF_HEADER2"
 .word 16639 ; NTSC speed
-.byte 0,0,0,0,0
+.byte 0,0,0,0,0,0,0,0
 .word 19997 ; PAL speed
 .byte %00000010 ; PAL/NTSC bits
 .byte NSF_EXPANSION ; expansion bits
