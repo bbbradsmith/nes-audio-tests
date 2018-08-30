@@ -19,10 +19,7 @@ INES2_REGION = 0 ; NTSC only
 .segment "SWAP"
 
 test_registers: ; $20
-.word $C000
-.word $E000
-SELECT = $20
-WRITE  = $21
+; not used
 
 test_routines: ; $40
 .word init_5b
@@ -39,7 +36,7 @@ test_data:
 .byte $00, %10111111 ; square duty, constant, full volume
 .byte $02, 253 ; (253+1)*16 = 4064 cycle square = ~440.40Hz
 .byte $03, $F0
-.byte DELAY, 60
+.byte DELAY, 120
 .byte $00, %00110000 ; zero volume
 .byte DELAY, 60
 ; 5B 440Hz square
@@ -47,7 +44,7 @@ test_data:
 .byte REG, $1, >127 ; 127*2*16 = 4064 cycle square
 .byte REG, $8, $0F ; full volume
 .byte REG, $7, %00111110 ; enable
-.byte DELAY, 60
+.byte DELAY, 120
 .byte REG, $7, %00111111 ; disable
 .byte DELAY, 60
 .byte LOOP

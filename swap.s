@@ -10,6 +10,7 @@
 .importzp NSF_EXPANSION
 .import INES_MAPPER
 .importzp INES2_REGION
+.import SKIP_HOTSWAP
 
 .include "swap.inc"
 
@@ -24,6 +25,7 @@ swap_routine:   .res 3 ; self modifying jsr (JMP abs)
 swap_data: ; startup buzz and wait for swap
 .byte BUZZ, 100 ; half second buzz
 .byte DELAY, 0 ; 256 frame delay
+skip_hotswap:
 .byte LOOP
 
 swap_internal:
@@ -200,6 +202,12 @@ swap_load:
 	sta swap_register+3
 	lda #$4C ; JMP abs
 	sta swap_routine+0
+	; setup data pointer
+	SWAP_DATA = ((SKIP_HOTSWAP <= 0) * swap_data) | ((SKIP_HOTSWAP > 0) * skip_hotswap)
+	lda #<SWAP_DATA
+	sta read_ptr+0
+	lda #>SWAP_DATA
+	sta read_ptr+1
 	rts
 
 .segment "NES"
@@ -239,10 +247,6 @@ nes_reset:
 	; load the swap code and begin
 	jsr swap_load
 	jsr swap_init_apu
-	lda #<swap_data
-	sta read_ptr+0
-	lda #>swap_data
-	sta read_ptr+1
 	jmp swap
 
 nes_nmi: ; unused
@@ -255,8 +259,7 @@ nsf_init:
 	rts
 
 nsf_play:
-	; skip the beginning buzz and wait
-	jsr swap_loop
+	jsr swap_init_apu
 	jmp swap
 
 .segment "NES_HEADER"
