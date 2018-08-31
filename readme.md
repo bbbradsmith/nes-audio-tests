@@ -6,7 +6,7 @@ Hotswap test ROMs are to be loaded on a suitable dev cart. On reset they copy th
 
 Relative volume tests: (* planned/unfinished)
 - db_apu - Full volume APU square vs. full volume APU triangle.
-- *db_vrc6 - Full volume APU square vs. full volume VRC6 square. Hotswap.
+- db_vrc6 - Full volume APU square vs. full volume VRC6 square. Hotswap.
 - db_vrc7 - Full volume APU square vs. full volume VRC7 pseudo-square (2:1 modulator at 50%). Hotswap.
 - *db_fds - Full volume APU square vs. full volume FDS square. Hotswap.
 - *db_mmc5 - Full volume APU square vs. full volume MMC5 square. Hotswap.
