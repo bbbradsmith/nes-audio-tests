@@ -7,10 +7,10 @@
 .import test_registers
 .import test_routines
 .import test_data
-.importzp NSF_EXPANSION
 .import INES_MAPPER
 .importzp INES2_REGION
-.import SKIP_HOTSWAP
+.importzp NSF_EXPANSION
+.importzp SKIP_HOTSWAP
 
 .include "swap.inc"
 
@@ -145,7 +145,7 @@ swap_init_apu:
 	:
 		sta $4000, X
 		inx
-		cpx #$14
+		cpx #$16
 		bcc :-
 	lda #$0F
 	sta $4015
