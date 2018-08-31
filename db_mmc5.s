@@ -1,6 +1,6 @@
 ;
 ; db_mmc5.s
-;   relative volume test for mmc5 expansion
+;   relative volume test for MMC5 expansion
 ;   https://github.com/bbbradsmith/nes-audio-tests
 ;
 
