@@ -14,7 +14,7 @@ Relative volume tests:
 - db_5b - Full volume APU square vs. full volume 5B square. Hotswap.
 
   I am collecting results from these volume tests for a survey. They will be posted here:
-  https://forums.nesdev.com/viewtopic.php?t=17741
+  - https://forums.nesdev.com/viewtopic.php?t=17741
 
 
 Notes:
