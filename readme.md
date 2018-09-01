@@ -8,17 +8,10 @@ Relative volume tests: (* planned/unfinished)
 - db_apu - Full volume APU square vs. full volume APU triangle.
 - db_vrc6 - Full volume APU square vs. full volume VRC6 square. Hotswap.
 - db_vrc7 - Full volume APU square vs. full volume VRC7 pseudo-square (2:1 modulator at 50%). Hotswap.
-- *db_fds - Full volume APU square vs. full volume FDS square. Hotswap.
+- db_fds - Full volume APU square vs. full volume FDS square. Hotswap.
 - db_mmc5 - Full volume APU square vs. full volume MMC5 square. Hotswap.
 - db_n163 - Full volume APU square vs. full volume N163 square, 1 channel mode. Hotswap.
 - db_5b - Full volume APU square vs. full volume 5B square. Hotswap.
-
-Other tests:  (* planned/unfinished)
-- * DAC linearity tests for APU 1&2, all expansions.
-- * VRC7 patch set test.
-- * NSFe chunk tests.
-- * NSF2 functionality tests.
-
 
 Notes:
 - swap.s - common code for hotswap tests

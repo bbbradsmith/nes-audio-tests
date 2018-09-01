@@ -12,6 +12,8 @@
 .importzp NSF_EXPANSION
 .importzp SKIP_HOTSWAP
 
+.export swap_load_partial
+
 .include "swap.inc"
 
 .segment "ZEROPAGE"
@@ -195,6 +197,7 @@ swap_load:
 		lda @dst+1
 		sbc #>__SWAP_END__
 		bcc @load_loop
+swap_load_partial:
 	; setup self modifying functions on ZP
 	lda #$8C ; STY abs
 	sta swap_register+0
