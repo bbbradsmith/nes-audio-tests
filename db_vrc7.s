@@ -16,6 +16,9 @@ INES2_REGION = 0 ; NTSC only
 .exportzp NSF_EXPANSION
 .exportzp INES2_REGION
 
+.segment "ZEROPAGE"
+temp: .res 1
+
 .segment "SWAP"
 
 test_registers: ; $20
@@ -56,11 +59,22 @@ test_data:
 .byte DELAY, 60
 .byte LOOP
 
+; register write delay code from Lagrange Point
+wait_9030:
+    stx temp
+    ldx #$08
+@wait_loop:
+    dex
+    bne @wait_loop
+    ldx temp
+wait_9010:
+    rts
+
 reg_write: ; X = register, Y = value
 	stx $9010
-	jsr swap_delay_48 ; at least 42 cycles required between select and write
+	jsr wait_9010
 	sty $9030
-	rts
+	jmp wait_9030
 
 reg:
 	tya

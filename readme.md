@@ -3,16 +3,19 @@
 Test ROMs and NSFs for NES and Famicom expansion audio. This collection is for testing various details of audio, and verifying emulator implementation. Pre-built ROMs can be found in the build/ folder.
 
 Relative volume tests:
-- db_apu - Full volume APU square vs. APU triangle.
-- db_vrc6 - Full volume APU square vs. full volume VRC6 square. Hotswap.
-- db_vrc7 - Full volume APU square vs. full volume VRC7 pseudo-square (2:1 modulator at 50%). Hotswap.
-- db_fds - Full volume APU square vs. full volume FDS square. Hotswap.
-- db_mmc5 - Full volume APU square vs. full volume MMC5 square. Hotswap.
-- db_n163 - Full volume APU square vs. full volume N163 square, 1 channel mode. Hotswap.
-- db_5b - Full volume APU square vs. full volume 5B square. Hotswap.
+- **db_apu** - Full volume APU square vs. APU triangle.
+- **db_vrc6** - Full volume APU square vs. full volume VRC6 square. Hotswap.
+- **db_vrc7** - Full volume APU square vs. full volume VRC7 pseudo-square (2:1 modulator at 50%). Hotswap.
+- **db_fds** - Full volume APU square vs. full volume FDS square. Hotswap.
+- **db_mmc5** - Full volume APU square vs. full volume MMC5 square. Hotswap.
+- **db_n163** - Full volume APU square vs. full volume N163 square, 1 channel mode. Hotswap.
+- **db_5b** - Full volume APU square vs. full volume 5B square. Hotswap.
 
-  I am collecting results from these volume tests for a survey. They will be posted here:
+  I am collecting results from these volume tests for a survey. Information is available here:
   - https://forums.nesdev.com/viewtopic.php?t=17741
+
+Other tests:
+- **patch_vrc7** - Comparison of prospective VRC7 built-in patch set against the actual set. Hotswap.
 
 
 Hotswap test ROMs are to be loaded on a suitable dev cart. On reset they copy their code to RAM and begin executing there. A buzz will be played through the DMC channel to indicate it is ready, and it will wait ~4 seconds for you to pull out the cartridge, then insert an appropriate expansion audio cartridge. Another buzz will indicate the code is still running before the test begins. After completing the cart will repeat the test. (Hotswapping frequently causes a crash, so it may take multiple attempts.) NROM versions of the hotswap ROMs may be used if the dev cart does not support the original mapper.
