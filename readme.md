@@ -13,6 +13,10 @@ Relative volume tests:
 - db_n163 - Full volume APU square vs. full volume N163 square, 1 channel mode. Hotswap.
 - db_5b - Full volume APU square vs. full volume 5B square. Hotswap.
 
+  I am collecting results from these volume tests for a survey. They will be posted here:
+  https://forums.nesdev.com/viewtopic.php?t=17741
+
+
 Notes:
 - swap.s - common code for hotswap tests
 
