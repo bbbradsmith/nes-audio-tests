@@ -5,7 +5,7 @@ Test ROMs and NSFs for NES and Famicom expansion audio. This collection is for t
 Hotswap test ROMs are to be loaded on a suitable dev cart. On reset they copy their code to RAM and begin executing there. A buzz will be played through the DMC channel to indicate it is ready, and it will wait ~4 seconds for you to pull out the cartridge, then insert an appropriate expansion audio cartridge. Another buzz will indicate the code is still running before the test begins. After completing the cart will repeat the test. (Hotswapping frequently causes a crash, so it may take multiple attempts.) NROM versions of the hotswap ROMs may be used if the dev cart does not support the original mapper.
 
 Relative volume tests:
-- db_apu - Full volume APU square vs. full volume APU triangle.
+- db_apu - Full volume APU square vs. APU triangle.
 - db_vrc6 - Full volume APU square vs. full volume VRC6 square. Hotswap.
 - db_vrc7 - Full volume APU square vs. full volume VRC7 pseudo-square (2:1 modulator at 50%). Hotswap.
 - db_fds - Full volume APU square vs. full volume FDS square. Hotswap.
