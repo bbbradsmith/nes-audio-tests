@@ -18,18 +18,19 @@ INES2_REGION = 0 ; NTSC only
 
 .segment "SWAP"
 
+.import VRC6A
 test_registers: ; $20
 .word $9000
-.word $9001
-.word $9002
+.word $9001 + (1 - VRC6A)
+.word $9002 + (VRC6A - 1)
 .word $9003
 .word $A000
-.word $A001
-.word $A002
+.word $A001 + (1 - VRC6A)
+.word $A002 + (VRC6A - 1)
 .word $A003
 .word $B000
-.word $B001
-.word $B002
+.word $B001 + (1 - VRC6A)
+.word $B002 + (VRC6A - 1)
 .word $B003
 V9000 = $20
 V9001 = $21
