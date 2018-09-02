@@ -1,11 +1,12 @@
 VRC7 patch sets:
-okazaki_1.vrc7 - Mitsutaka Okazaki, NSFPlay 1 (2004-04-10) http://dsa.sakura.ne.jp/arc/src/xgm/latest/xgmapp060505s.zip
-okazaki_2.vrc7 - Mitsutaka Okazaki, Famitracker 0.3.5 (2001-06-24)
+ap9.vrc7 - ap9 (2017-08-18) http://forums.nesdev.com/viewtopic.php?p=206193#p206193
 kevtris_1.vrc7 - kevtris (1999-11-14) http://kevtris.org/nes/vrcvii.txt
 kevtris_2.vrc7 - kevtris (1999-11-15) http://kevtris.org/nes/vrcvii.txt
+okazaki_1.vrc7 - Mitsutaka Okazaki, NSFPlay 1 (2004-04-10) http://dsa.sakura.ne.jp/arc/src/xgm/latest/xgmapp060505s.zip
+okazaki_2.vrc7 - Mitsutaka Okazaki, Famitracker 0.3.5 (2001-06-24)
+plogue.vrc7 - plogue (2018-09-02) http://forums.nesdev.com/viewtopic.php?p=224854#p224854
 quietust.vrc7 - quietust, Famitracker 0.3.6 (2004-01-17) http://nesdev.com/cgi-bin/wwwthreads/showpost.pl?Board=NESemdev&Number=1440
 rainwarrior_1.vrc7 - rainwarrior (2012-08-01) http://forums.nesdev.com/viewtopic.php?f=6&t=9141
-ap9.vrc7 - ap9 (2017-08-18) http://forums.nesdev.com/viewtopic.php?p=206193#p206193
 rainwarrior_2.vrc7 - rainwarrior (2018-09-01) http://forums.nesdev.com/viewtopic.php?p=224838#p224838
 
 Related patch sets:
