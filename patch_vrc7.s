@@ -25,7 +25,7 @@ temp: .res 1
 .segment "SWAP"
 
 patch_set:
-.incbin "vrc7_patches/ap9.vrc7"
+.incbin "vrc7_patches/rainwarrior_2.vrc7"
 
 test_registers: ; $20
 ; not used
