@@ -42,7 +42,7 @@ test_data:
 ; 5B 440Hz square
 .byte REG, $0, <127
 .byte REG, $1, >127 ; 127*2*16 = 4064 cycle square
-.byte REG, $8, $0F ; full volume
+.byte REG, $8, $0C ; volume C
 .byte REG, $7, %00111110 ; enable
 .byte DELAY, 120
 .byte REG, $7, %00111111 ; disable
