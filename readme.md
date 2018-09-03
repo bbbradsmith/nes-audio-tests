@@ -14,13 +14,16 @@ Relative volume tests:
   I am collecting results from these volume tests for a survey. Information is available here:
   - https://forums.nesdev.com/viewtopic.php?t=17741
 
-Other tests:
-- **patch_vrc7** - Comparison of prospective VRC7 built-in patch set against the actual set. Hotswap.
-
-
 Hotswap test ROMs are to be loaded on a suitable dev cart. On reset they copy their code to RAM and begin executing there. A buzz will be played through the DMC channel to indicate it is ready, and it will wait ~4 seconds for you to pull out the cartridge, then insert an appropriate expansion audio cartridge. Another buzz will indicate the code is still running before the test begins. After completing the cart will repeat the test. (Hotswapping frequently causes a crash, so it may take multiple attempts.) NROM versions of the hotswap ROMs may be used if the dev cart does not support the original mapper.
 
 Some people are uncomfortable with the idea of hotswapping cartridges. It has been safe in my experience, doing it hundreds of times, but I cannot guarantee it's a 100% safe procedure. All I can say is that it's been worth the risk for me to be able to test these things. Do not hotswap your cartridges if you don't accept this risk.
+
+
+Other tests: (these are not survey tests, merely part of my personal ongoing investigations)
+- **patch_vrc7** - Comparison of prospective VRC7 built-in patch set against the actual set. Hotswap.
+- **lfo_vrc7** - Demonstration that the LFO can be reset by flipping bit 7 of $E000 on and off.
+- **clip_vrc7** - Demonstration of clipping in the VRC7 amplifier.
+- **clip_5b** - Demonstration of ??? in the 5B amplifier (still trying to understand this).
 
 
 Notes:
