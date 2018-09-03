@@ -46,7 +46,7 @@ test_data:
 .byte REG, $00, $22 ; M: sustain, multiplier x2
 .byte REG, $01, $21 ; C: sustain, multiplier x1
 .byte REG, $02, $20 ; M: output level 50%
-.byte REG, $03, $00 ; C/M: sine
+.byte REG, $03, $07 ; C/M: sine, full feedback
 .byte REG, $04, $F0 ; M: fast attack, no decay
 .byte REG, $05, $F0 ; C: fast attack, no decay
 .byte REG, $06, $0F ; M: full sustain, fast release
