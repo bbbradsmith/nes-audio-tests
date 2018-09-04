@@ -23,7 +23,9 @@ Other tests: (these are not survey tests, merely part of my personal ongoing inv
 - **patch_vrc7** - Comparison of prospective VRC7 built-in patch set against the actual set. Hotswap.
 - **lfo_vrc7** - Demonstration that the LFO can be reset by flipping bit 7 of $E000 on and off.
 - **clip_vrc7** - Demonstration of clipping in the VRC7 amplifier.
-- **clip_5b** - Demonstration of ??? in the 5B amplifier (still trying to understand this).
+- **clip_5b** - Demonstration of compression in the 5B amplifier.
+- **noise_vrc7** - White noise to characterize the VRC7 filters.
+- **noise_5b** - White noise to characterize the 5B filters.
 
 
 Notes:
