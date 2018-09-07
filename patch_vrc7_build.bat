@@ -1,11 +1,11 @@
 REM remove temporary stuff
-del out_build\swap.o
-del out_build\patch_vrc7.o
-del out_build\patch_vrc7.nes
-del out_build\patch_vrc7_nrom.nes
-del out_build\patch_vrc7.nsf
-del out_build\patch_vrc7.dbg
-del out_build\patch_vrc7.map.txt
+del build\swap.o
+del build\patch_vrc7.o
+del build\patch_vrc7.nes
+del build\patch_vrc7_nrom.nes
+del build\patch_vrc7.nsf
+del build\patch_vrc7.dbg
+del build\patch_vrc7.map.txt
 
 cc65\bin\ca65 swap.s -o build\swap.o -g
 @IF ERRORLEVEL 1 GOTO badbuild

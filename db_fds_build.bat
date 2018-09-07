@@ -1,12 +1,12 @@
 REM remove temporary stuff
-del out_build\swap.o
-del out_build\swap_fds.o
-del out_build\db_fds.o
-del out_build\db_fds.fds
-del out_build\db_fds_nrom.nes
-del out_build\db_fds.nsf
-del out_build\db_fds.dbg
-del out_build\db_fds.map.txt
+del build\swap.o
+del build\swap_fds.o
+del build\db_fds.o
+del build\db_fds.fds
+del build\db_fds_nrom.nes
+del build\db_fds.nsf
+del build\db_fds.dbg
+del build\db_fds.map.txt
 
 cc65\bin\ca65 swap.s -o build\swap.o -g
 @IF ERRORLEVEL 1 GOTO badbuild

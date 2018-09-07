@@ -1,10 +1,10 @@
 REM remove temporary stuff
-del out_build\swap.o
-del out_build\db_apu.o
-del out_build\db_apu.nes
-del out_build\db_apu.nsf
-del out_build\db_apu.dbg
-del out_build\db_apu.map.txt
+del build\swap.o
+del build\db_apu.o
+del build\db_apu.nes
+del build\db_apu.nsf
+del build\db_apu.dbg
+del build\db_apu.map.txt
 
 cc65\bin\ca65 swap.s -o build\swap.o -g
 @IF ERRORLEVEL 1 GOTO badbuild

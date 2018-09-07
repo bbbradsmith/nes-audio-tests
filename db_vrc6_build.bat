@@ -1,13 +1,13 @@
 REM remove temporary stuff
-del out_build\swap.o
-del out_build\db_vrc6.o
-del out_build\db_vrc6a.nes
-del out_build\db_vrc6a_nrom.nes
-del out_build\db_vrc6b.nes
-del out_build\db_vrc6b_nrom.nes
-del out_build\db_vrc6.nsf
-del out_build\db_vrc6a.dbg
-del out_build\db_vrc6a.map.txt
+del build\swap.o
+del build\db_vrc6.o
+del build\db_vrc6a.nes
+del build\db_vrc6a_nrom.nes
+del build\db_vrc6b.nes
+del build\db_vrc6b_nrom.nes
+del build\db_vrc6.nsf
+del build\db_vrc6a.dbg
+del build\db_vrc6a.map.txt
 
 cc65\bin\ca65 swap.s -o build\swap.o -g
 @IF ERRORLEVEL 1 GOTO badbuild

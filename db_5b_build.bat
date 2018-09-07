@@ -1,11 +1,11 @@
 REM remove temporary stuff
-del out_build\swap.o
-del out_build\db_5b.o
-del out_build\db_5b.nes
-del out_build\db_5b_nrom.nes
-del out_build\db_5b.nsf
-del out_build\db_5b.dbg
-del out_build\db_5b.map.txt
+del build\swap.o
+del build\db_5b.o
+del build\db_5b.nes
+del build\db_5b_nrom.nes
+del build\db_5b.nsf
+del build\db_5b.dbg
+del build\db_5b.map.txt
 
 cc65\bin\ca65 swap.s -o build\swap.o -g
 @IF ERRORLEVEL 1 GOTO badbuild
