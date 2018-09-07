@@ -32,10 +32,15 @@ test_data:
 .byte INIT_APU, 0
 .byte INIT_5B, 0
 .byte DELAY, 60
+.byte $11, $7F ; APU step for reference
+.byte DELAY, 60
+.byte $11, $00
+.byte DELAY, 60
 ; APU 56KhZ 1-bit noise
 .byte $0C, $3F ; full constant volume
 .byte $0E, $03 ; period 3 (32 cycles)
 .byte $0F, $FF ; trigger
+.byte DELAY, 180
 .byte DELAY, 180
 .byte $0C, $10 ; 0 volume
 .byte DELAY, 60
@@ -43,6 +48,7 @@ test_data:
 .byte REG, $07, $01 ; 32 cycle noise
 .byte REG, $08, $0C ; volume 12
 .byte REG, $07, %00110111 ; noise on
+.byte DELAY, 180
 .byte DELAY, 180
 .byte REG, $08, $00 ; volume 0
 .byte DELAY, 60

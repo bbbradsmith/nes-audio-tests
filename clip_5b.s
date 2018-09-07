@@ -80,14 +80,14 @@ test_data:
 ; APU triangle off
 .byte $08, $80 ; silence triangle
 .byte DELAY, 60
-; final test, enable higher frequency sound at highest volume, try to measure attack/release time
-.byte TONE6, VOL3_STEPS-1
+; final test, enable higher frequency sound at high volume but centred, try to measure attack/release time
+.byte TONE6, VOL3_STEPS-3
 .byte VOL3, 0
 .byte DELAY, 60
 .byte $0A, 30 ; ~1800hz triangle
 .byte $08, $FF ; begin APU triangle
 .byte DELAY, 60
-.byte TONE6, VOL3_STEPS-1
+.byte TONE6, VOL3_STEPS-3
 .byte VOL3, 0
 .byte DELAY, 60
 .byte $08, $80 ; silence triangle
@@ -129,28 +129,50 @@ tone3:
 	:
 		.repeat 2
 			jsr swap_delay_768
-			jsr set_rv3
-			jsr swap_delay_768
 			jsr set_0
+			jsr swap_delay_768
+			jsr set_rv3
 		.endrepeat
 		dex
 		bne :- ;  this loop makes it a little rough, but it's good enough
+	jsr swap_delay_768
+	jsr set_0
 	ldy #10
 	jsr swap_delay ; 1/6 second of silence
 	rts
 
 tone6: ; ~2200hz for 1 s
+	tya
+	pha
+	sec
+	sbc #6 ; hold "middle" value (-6db) for 1 second
+	tay
+	jsr vol3
+	ldy #60
+	jsr swap_delay
+	pla
+	pha
+	tay
 	jsr vol3
 	ldx #0
 	:
 		.repeat 8
 			jsr swap_delay_384
-			jsr set_rv3
-			jsr swap_delay_384
 			jsr set_0
+			jsr swap_delay_384
+			jsr set_rv3
 		.endrepeat
 		dex
 		bne :-
+	jsr swap_delay_384
+	pla
+	sec
+	sbc #6 ; hold middle value again for 1 second
+	tay
+	jsr vol3
+	ldy #60
+	jsr swap_delay
+	jsr set_0
 	rts
 
 reg:
