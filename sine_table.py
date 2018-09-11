@@ -57,9 +57,9 @@ def linear_5b(entries):
         best = (0,0,0)
         best_diff = abs(mix(0,0,0) - target)
         for i in range(0,16):
-            for j in range(0,max(i-3,1)):
-                for k in range(0,max(j-3,1)):
-                    # note the -3 keeps each channel exponentially quieter:
+            for j in range(0,max(i-2,1)):
+                for k in range(0,max(j-2,1)):
+                    # note the - on the ranges keeps each channel exponentially quieter:
                     # this is done to mitigate differences between the theoretical
                     # linear mix, and the actual mix of the 3 channels.
                     diff = abs(mix(i,j,k) - target)
@@ -81,3 +81,8 @@ s += assemble_table(tables_5b[0],"mix_5b_0", 16)
 s += assemble_table(tables_5b[1],"mix_5b_1", 16)
 s += assemble_table(tables_5b[2],"mix_5b_2", 16)
 open("sine_5b.inc","wt").write(s)
+
+#import matplotlib.pyplot as plt
+#o = [output_5b[x] for x in sine_5b]
+#plt.plot(o)
+#plt.show()
