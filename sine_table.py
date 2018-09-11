@@ -45,18 +45,17 @@ def write_table(table, filename, columns):
 def linear_5b(entries):
     # using tables to mix 3 channels to combine into something as close to linear as we can manage
     base = [10**(3*x/20) for x in range(0,16)] # 3db per step
-    base[0] = 0 # counts as off
-    r0 = base[1]
-    r1 = base[13]
-    table = []
-    output = []
     def mix(a,b,c):
         return base[a] + base[b] + base[c]
+    r0 = mix(0,0,0)
+    r1 = mix(13,0,0)
+    table = []
+    output = []
     for t in range(0,entries):
         target = r0 + (r1-r0) * (t / (entries-1))
         best = (0,0,0)
         best_diff = abs(mix(0,0,0) - target)
-        for i in range(0,16):
+        for i in range(15,-1,-1):
             for j in range(0,max(i-2,1)):
                 for k in range(0,max(j-2,1)):
                     # note the - on the ranges keeps each channel exponentially quieter:
@@ -82,7 +81,7 @@ s += assemble_table(tables_5b[1],"mix_5b_1", 16)
 s += assemble_table(tables_5b[2],"mix_5b_2", 16)
 open("sine_5b.inc","wt").write(s)
 
-#import matplotlib.pyplot as plt
-#o = [output_5b[x] for x in sine_5b]
-#plt.plot(o)
-#plt.show()
+##import matplotlib.pyplot as plt
+##o = [output_5b[x] for x in sine_5b]
+##plt.plot(o)
+##plt.show()
