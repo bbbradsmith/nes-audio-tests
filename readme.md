@@ -26,6 +26,7 @@ Other tests: (these are not survey tests, merely part of my personal ongoing inv
 - **clip_5b** - Demonstration of compression in the 5B amplifier.
 - **noise_vrc7** - White noise to characterize the VRC7 filters.
 - **noise_5b** - White noise to characterize the 5B filters.
+- **sweep_5b** - Frequency sweep and noise to characterize the 5B filters. (Good for APU too.)
 
 
 Notes:
