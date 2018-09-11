@@ -1,10 +1,10 @@
 ;
 ; sweep_5b.s
 ;   sweep and noise spectrum test for 5B expansion:
-;   - approximated sine wave at ~17376Hz samplerate (103 cycles)
+;   - approximated sine wave at ~13064Hz samplerate (137 cycles)
 ;   - 1-bit noise at ~56kHz (32 cycles)
 ;   first sweep is APU, second sweep is 5B
-;   sweep is approximately logarithmic, ~2.67 seconds per octave
+;   sweep is approximately logarithmic, ~3.54 seconds per octave
 ;   
 ;   https://github.com/bbbradsmith/nes-audio-tests
 ;
@@ -41,6 +41,10 @@ sine_dmc:
 .align 256
 sine_5b:
 .include "sine_5b.inc"
+mix_5b_0 = sine_5b + 256
+mix_5b_1 = mix_5b_0 + 64
+mix_5b_2 = mix_5b_1 + 64
+.assert * = mix_5b_2 + 64, error, "unexpected data size in sine_5b.inc"
 
 sweep_loop:
 	ldy #0
@@ -48,7 +52,7 @@ sweep_loop:
 		jsr swap_delay_24 ; 24
 	@next:
 		jsr sweep_iter    ; 43
-		jsr sweep_write   ; 31 = 103 since last sweep_write (43 + 31 + 29)
+		jsr sweep_write   ; 65 = 137 since last sweep_write (43 + 65 + 29)
 		dey               ; 2
 		bne @sample       ; 2 / 3
 		branch_page @sample
@@ -83,7 +87,7 @@ sweep_loop:
 	adc #0        ; 2
 	sta sweep_a+1 ; 3
 	jsr swap_delay_12
-	bit sweep_p+0 ; 3
+	bit $0        ; 3
 	nop           ; 2 = 29
 	jsr sweep_iter
 	jsr sweep_write
@@ -137,17 +141,28 @@ sweep_common:
 sweep_write_apu:    ; 11 (jsr + jmp)
 	lda sine_dmc, X ; 4
 	sta $4011       ; 4
+	jsr swap_delay_24
+	jsr swap_delay_12
 	nop             ; 2
 	nop             ; 2
-	nop             ; 2
-	rts             ; 6 = 31
+	rts             ; 6 = 65
 
-sweep_write_5b:    ; 11 (jsr + jmp)
-	lda sine_5b, X ; 4
-	ldx #$08       ; 2
-	stx $C000      ; 4
-	sta $E000      ; 4
-	rts            ; 6 = 31
+sweep_write_5b:     ; 11 (jsr + jmp)
+	lda sine_5b, X  ; 4
+	tax             ; 2
+	lda #$08        ; 2 .
+	sta $C000       ; 4 .
+	lda mix_5b_0, X ; 4 .
+	sta $E000       ; 4 . 14
+	lda #$09
+	sta $C000
+	lda mix_5b_1, X
+	sta $E000       ; 14
+	lda #$0A
+	sta $C000
+	lda mix_5b_2, X
+	sta $E000       ; 14
+	rts             ; 6 = 65
 
 sweep_5b:
 	lda #<sweep_write_5b
