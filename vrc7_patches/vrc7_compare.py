@@ -46,7 +46,7 @@ def patch_split(p):
     mo = (p[2] >> 0) & 63 # M output
     cl = (p[3] >> 6) & 3  # C key level scale
     cw = (p[3] >> 4) & 1  # C waveform
-    mw = (p[3] >> 5) & 1  # M waveform
+    mw = (p[3] >> 3) & 1  # M waveform
     fb = (p[3] >> 0) & 7  # feedback
     ma = (p[4] >> 4) & 15 # M attack
     md = (p[4] >> 0) & 15 # M decay
