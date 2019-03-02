@@ -28,6 +28,11 @@ Other tests: (these are not survey tests, merely part of my personal ongoing inv
 - **noise_5b** - White noise to characterize the 5B filters.
 - **sweep_5b** - Frequency sweep and noise to characterize the 5B filters. (Good for APU too.)
 
+NSF2 tests: (to test NSF players for [NSF2](https://wiki.nesdev.com/w/index.php/NSF2) support)
+- **nsf2_init_play** - The non-returning INIT and NMI-driven PLAY feature.
+- **nsf2_init_no_play** - The non-returning INIT and suppressed PLAY feature.
+- **nsf2_irq** - The IRQ feature. (Not yet written.)
+
 
 Notes:
 - swap.s - common code for hotswap tests
