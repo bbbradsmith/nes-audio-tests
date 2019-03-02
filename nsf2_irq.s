@@ -141,7 +141,7 @@ nsf_play:
 	inx
 	inx
 	txa
-	and #7
+	and #(8*2)-1
 	sta song_position
 @delay:
 	; half a frame of busy-waiting just to verify it's not interfering with IRQ
