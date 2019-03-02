@@ -31,7 +31,7 @@ Other tests: (these are not survey tests, merely part of my personal ongoing inv
 NSF2 tests: (to test NSF players for [NSF2](https://wiki.nesdev.com/w/index.php/NSF2) support)
 - **nsf2_init_play** - The non-returning INIT and NMI-driven PLAY feature.
 - **nsf2_init_no_play** - The non-returning INIT and suppressed PLAY feature.
-- **nsf2_irq** - The IRQ feature. (Not yet written.)
+- **nsf2_irq** - The IRQ feature.
 
 
 Notes:

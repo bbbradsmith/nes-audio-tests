@@ -15,7 +15,7 @@ cc65\bin\ld65 -o build\nsf2_init_play.nsf    -C nsf2_nsf.cfg build\nsf2_init_pla
 @IF ERRORLEVEL 1 GOTO badbuild
 cc65\bin\ld65 -o build\nsf2_init_no_play.nsf -C nsf2_nsf.cfg build\nsf2_init_no_play.o -m build\nsf2_init_no_play.map.txt --dbgfile build\nsf2_init_no_play.dbg
 @IF ERRORLEVEL 1 GOTO badbuild
-cc65\bin\ld65 -o build\nsf2_irq.nsf          -C nsf2_nsf.cfg build\nsf2_irq.o          -m build\nsf2_irq.map.txt          --dbgfile build\nsf2_init_irq.dbg
+cc65\bin\ld65 -o build\nsf2_irq.nsf          -C nsf2_nsf.cfg build\nsf2_irq.o          -m build\nsf2_irq.map.txt          --dbgfile build\nsf2_irq.dbg
 @IF ERRORLEVEL 1 GOTO badbuild
 
 @echo.

@@ -9,8 +9,8 @@
 ;
 ;   Verify:
 ;     When INIT is called a second time, it plays a 250Hz 0-duty square wave tone.
-;     If PLAY is called regularly it plays a 100Hz square wave through $4011.
-;     The result should hear only the INIT tone.
+;     If PLAY is called regularly it would play a 100Hz square wave through $4011,
+;     but the result should hear only the INIT tone.
 ;
 ;     An error tone of 1100Hz will be played by the triangle in response
 ;     to an unexpected NMI or IRQ fetching from the NSF's vector area,
@@ -41,8 +41,8 @@ text_chunk:
 .byte ";",NL
 .byte ";   Verify:",NL
 .byte ";     When INIT is called a second time, it plays a 250Hz 0-duty square wave tone.",NL
-.byte ";     If PLAY is called regularly it plays a 100Hz square wave through $4011.",NL
-.byte ";     The result should hear only the INIT tone.",NL
+.byte ";     If PLAY is called regularly it would play a 100Hz square wave through $4011.",NL
+.byte ";     but the result should hear only the INIT tone.",NL
 .byte ";",NL
 .byte ";     An error tone of 1100Hz will be played by the triangle in response",NL
 .byte ";     to an unexpected NMI or IRQ fetching from the NSF's vector area,",NL
@@ -81,7 +81,7 @@ init_loop:
 	rts
 
 nsf_play:
-	; play generates a 30Hz square wave
+	; play generates a $4011 square wave
 	lda play_flip
 	eor #$1F
 	sta play_flip

@@ -81,7 +81,7 @@ init_loop:
 	rts
 
 nsf_play:
-	; play generates a 30Hz square wave
+	; play generates a $4011 square wave
 	lda play_flip
 	eor #$1F
 	sta play_flip
