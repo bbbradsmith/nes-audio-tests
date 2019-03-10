@@ -33,6 +33,7 @@ NSF2 tests: (to test NSF players for [NSF2](https://wiki.nesdev.com/w/index.php/
 - **nsf2_init_play** - The non-returning INIT and NMI-driven PLAY feature.
 - **nsf2_init_no_play** - The non-returning INIT and suppressed PLAY feature.
 - **nsf2_irq** - The IRQ feature.
+- **nsf2_saw_song** - DMC IRQ saw wave test [by Blargg](http://blargg.8bitalley.com/misc/nes-saw/)
 
 
 Notes:
