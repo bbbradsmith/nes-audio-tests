@@ -1,6 +1,10 @@
 ;
 ; lfo_vrc7.s
-;   LFO reset test for VRC7 expansion
+;   LFO reset test for VRC7 expansion:
+;       3 tones instrument 10, tremolo LFO synchronized with chip reset
+;       3 tones instrument 12, vibrato LFO is not synchronized despite chip reset
+;       3 tones instrument 10, tremolo LFO is not synchronized
+;       3 tones instrument 12, vibrato LFO is not synchronized
 ;   https://github.com/bbbradsmith/nes-audio-tests
 ;
 
