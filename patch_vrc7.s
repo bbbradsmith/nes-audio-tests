@@ -162,7 +162,8 @@ play_tones:
 	ldy inst ; dummy
 	ldy #$00
 	jsr reg_write ; custom instrument, full volume
-	jmp play_tone
+	jsr play_tone
+	rts
 
 play_tone:
 	; trigger
@@ -190,7 +191,7 @@ play_tone:
 	jsr swap_delay ; 2s
 	rts
 
-lfo_reset:
+lfo_reset: ; note: doesn't seem to reset vibrato LFO, just tremolo?
 	lda #$40
 	sta $E000
 	jsr swap_delay_frame

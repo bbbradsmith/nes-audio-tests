@@ -2,8 +2,8 @@
 import sys
 assert sys.version_info[0] >= 3, "Python 3 required."
 
-file_a = "rainwarrior_1.vrc7"
-file_b = "rainwarrior_2.vrc7"
+file_a = "rainwarrior_2.vrc7"
+file_b = "nukeykt.vrc7"
 
 PARAM = [
     "M tremolo",
