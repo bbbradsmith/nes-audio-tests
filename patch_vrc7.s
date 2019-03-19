@@ -6,7 +6,7 @@
 
 .include "swap.inc"
 
-NSF_STRINGS "patch_vrc7 test", "Brad Smith", "2018 nes-audio-tests"
+NSF_STRINGS "patch_vrc7 test", "Brad Smith", "2019 nes-audio-tests"
 NSF_EXPANSION = %00000010
 INES2_REGION = 0 ; NTSC only
 
@@ -25,7 +25,7 @@ temp: .res 1
 .segment "SWAP"
 
 patch_set:
-.incbin "vrc7_patches/rainwarrior_2.vrc7"
+.incbin "vrc7_patches/nukeykt.vrc7"
 
 test_registers: ; $20
 ; not used
@@ -100,17 +100,9 @@ init_vrc7:
 		bcc :-
 	rts
 
-patch:
-	; Y = instrument
-	; remember instrument << 4 for register $30 write
-	tya
-	asl
-	asl
-	asl
-	pha
-	asl
-	sta inst ; inst = patch << 4
-	pla
+patch_reload:
+	lda inst ; instrument << 4
+	lsr ; instrument << 3
 	; load patch
 	@patch_ptr = write_ptr
 	; A = patch * 8
@@ -130,6 +122,17 @@ patch:
 		inx
 		cpx #8
 		bcc :-
+	rts
+
+patch:
+	; Y = instrument
+	; remember instrument << 4 for register $30 write
+	tya
+	asl
+	asl
+	asl
+	asl
+	sta inst ; inst = patch << 4
 	; play test tones at 3 pitches
 	.macro TONE low_, high_
 		lda #low_
@@ -146,11 +149,17 @@ patch:
 	rts
 
 play_tones:
+	jsr lfo_reset
+	jsr patch_reload
 	ldx #$30
+	ldy #0 ; dummy load for matched cycles since lfo_reset
 	ldy inst
 	jsr reg_write ; original instrument, full volume
 	jsr play_tone
+	jsr lfo_reset
+	jsr patch_reload
 	ldx #$30
+	ldy inst ; dummy
 	ldy #$00
 	jsr reg_write ; custom instrument, full volume
 	jmp play_tone
@@ -179,6 +188,15 @@ play_tone:
 	jsr reg_write
 	ldy #120
 	jsr swap_delay ; 2s
+	rts
+
+lfo_reset:
+	lda #$40
+	sta $E000
+	jsr swap_delay_frame
+	lda #$00
+	sta $E000
+	jsr swap_delay_frame
 	rts
 
 ; end of file

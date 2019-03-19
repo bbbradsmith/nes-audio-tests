@@ -8,6 +8,7 @@ plogue.vrc7 - plogue (2018-09-02) http://forums.nesdev.com/viewtopic.php?p=22485
 quietust.vrc7 - quietust, Famitracker 0.3.6 (2004-01-17) http://nesdev.com/cgi-bin/wwwthreads/showpost.pl?Board=NESemdev&Number=1440
 rainwarrior_1.vrc7 - rainwarrior (2012-08-01) http://forums.nesdev.com/viewtopic.php?f=6&t=9141
 rainwarrior_2.vrc7 - rainwarrior (2018-09-01) http://forums.nesdev.com/viewtopic.php?p=224838#p224838
+nukeykt.vrc7 - Nuke.KYT (2019-03-15) https://siliconpr0n.org/archive/doku.php?id=vendor:yamaha:opl2#ym2413_instruments
 
 Related patch sets:
 2413okazaki.vrc7 - YM2413 - Mitsutaka Okazaki (2004-04-10) http://dsa.sakura.ne.jp/arc/src/xgm/latest/xgmapp060505s.zip
