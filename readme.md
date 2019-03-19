@@ -21,7 +21,7 @@ Some people are uncomfortable with the idea of hotswapping cartridges. It has be
 
 Other tests: (these are not survey tests, merely part of my personal ongoing investigations)
 - **patch_vrc7** - Comparison of prospective VRC7 built-in patch set against the actual set. Hotswap.
-- **lfo_vrc7** - Demonstration that the LFO can be reset by flipping bit 7 of $E000 on and off.
+- **lfo_vrc7** - Demonstration that the tremolo LFO can be reset (but vibrato LFO can't) by flipping bit 7 of $E000 on and off.
 - **clip_vrc7** - Demonstration of clipping in the VRC7 amplifier.
 - **clip_5b** - Demonstration of compression in the 5B amplifier.
 - **noise_vrc7** - White noise to characterize the VRC7 filters.

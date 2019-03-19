@@ -37,28 +37,95 @@ test_data:
 .byte INIT_APU, 0
 .byte INIT_VRC7, 0
 .byte DELAY, 60
-; VRC7 440Hz, instrument 11
+; VRC7 440Hz, instrument 10, demonstrates tremolo LFO sync
 .byte LFO_RESET, $00
-.byte REG, $30, $B0 ; instrument 11, full volume
-.byte REG, $10, <290 ; ~440Hz
-.byte REG, $20, (290>>8) | (4<<1) | (1<<4) ; ~440Hz, octave 4, trigger note
+.byte REG, $30, $A0 ; instrument 11, full volume
+.byte REG, $10, <290 ; ~110Hz
+.byte REG, $20, (290>>8) | (2<<1) | (1<<4) ; ~110Hz, octave 2, trigger note
 .byte DELAY, 120
 .byte REG, $20, $00 ; release note
+.byte DELAY, 65
+.byte LFO_RESET, $00
+.byte REG, $30, $A0
+.byte REG, $10, <290
+.byte REG, $20, (290>>8) | (2<<1) | (1<<4)
+.byte DELAY, 120
+.byte REG, $20, $00
+.byte DELAY, 74
+.byte LFO_RESET, $00
+.byte REG, $30, $A0
+.byte REG, $10, <290
+.byte REG, $20, (290>>8) | (2<<1) | (1<<4)
+.byte DELAY, 120
+.byte REG, $20, $00
 .byte DELAY, 60
+; VRC7 440Hz, instrument 12, demonstrates lack of vibrato LFO sync
 .byte LFO_RESET, $00
-.byte REG, $30, $B0 ; instrument 11, full volume
+.byte REG, $30, $C0 ; instrument 12, full volume
 .byte REG, $10, <290 ; ~440Hz
 .byte REG, $20, (290>>8) | (4<<1) | (1<<4) ; ~440Hz, octave 4, trigger note
 .byte DELAY, 120
 .byte REG, $20, $00 ; release note
-.byte DELAY, 71
+.byte DELAY, 65
 .byte LFO_RESET, $00
-.byte REG, $30, $B0 ; instrument 11, full volume
-.byte REG, $10, <290 ; ~440Hz
-.byte REG, $20, (290>>8) | (4<<1) | (1<<4) ; ~440Hz, octave 4, trigger note
+.byte REG, $30, $C0
+.byte REG, $10, <290
+.byte REG, $20, (290>>8) | (4<<1) | (1<<4)
 .byte DELAY, 120
-.byte REG, $20, $00 ; release note
+.byte REG, $20, $00
+.byte DELAY, 74
+.byte LFO_RESET, $00
+.byte REG, $30, $C0
+.byte REG, $10, <290
+.byte REG, $20, (290>>8) | (4<<1) | (1<<4)
+.byte DELAY, 120
+.byte REG, $20, $00
 .byte DELAY, 60
+; VRC7 440Hz, instrument 10, unsynced
+.byte DELAY, 2 ; 2 frame delay replaces LFO_SYNC
+.byte REG, $30, $A0
+.byte REG, $10, <290
+.byte REG, $20, (290>>8) | (2<<1) | (1<<4)
+.byte DELAY, 120
+.byte REG, $20, $00
+.byte DELAY, 65
+.byte DELAY, 2
+.byte REG, $30, $A0
+.byte REG, $10, <290
+.byte REG, $20, (290>>8) | (2<<1) | (1<<4)
+.byte DELAY, 120
+.byte REG, $20, $00
+.byte DELAY, 74
+.byte DELAY, 2
+.byte REG, $30, $A0
+.byte REG, $10, <290
+.byte REG, $20, (290>>8) | (2<<1) | (1<<4)
+.byte DELAY, 120
+.byte REG, $20, $00
+.byte DELAY, 60
+; VRC7 440Hz, instrument 12, demonstrates lack of vibrato LFO sync
+.byte DELAY, 2 ; 2 frame delay replaces LFO_SYNC
+.byte REG, $30, $C0
+.byte REG, $10, <290 ; ~440Hz
+.byte REG, $20, (290>>8) | (4<<1) | (1<<4)
+.byte DELAY, 120
+.byte REG, $20, $00
+.byte DELAY, 65
+.byte DELAY, 2
+.byte REG, $30, $C0
+.byte REG, $10, <290
+.byte REG, $20, (290>>8) | (4<<1) | (1<<4)
+.byte DELAY, 120
+.byte REG, $20, $00
+.byte DELAY, 74
+.byte DELAY, 2
+.byte REG, $30, $C0
+.byte REG, $10, <290
+.byte REG, $20, (290>>8) | (4<<1) | (1<<4)
+.byte DELAY, 120
+.byte REG, $20, $00
+.byte DELAY, 60
+; repeat test
 .byte LOOP
 
 ; register write delay code from Lagrange Point
