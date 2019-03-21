@@ -10,7 +10,7 @@
 
 .include "swap.inc"
 
-NSF_STRINGS "lfo_vrc7 test", "Brad Smith", "2018 nes-audio-tests"
+NSF_STRINGS "lfo_vrc7 test", "Brad Smith", "2019 nes-audio-tests"
 NSF_EXPANSION = %00000010
 INES2_REGION = 0 ; NTSC only
 
@@ -43,7 +43,7 @@ test_data:
 .byte DELAY, 60
 ; VRC7 440Hz, instrument 10, demonstrates tremolo LFO sync
 .byte LFO_RESET, $00
-.byte REG, $30, $A0 ; instrument 11, full volume
+.byte REG, $30, $A0 ; instrument 10, full volume
 .byte REG, $10, <290 ; ~110Hz
 .byte REG, $20, (290>>8) | (2<<1) | (1<<4) ; ~110Hz, octave 2, trigger note
 .byte DELAY, 120

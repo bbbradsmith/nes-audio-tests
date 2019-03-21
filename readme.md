@@ -29,6 +29,7 @@ Other tests: (these are not survey tests, merely part of my personal ongoing inv
 - **sweep_5b** - Frequency sweep and noise to characterize the 5B filters. (Good for APU too.)
 - **nsf_init_y** - 8 bit beep readout of Y register value passed to INIT.
 - **tri_silence** - Tests various ways of silencing the triangle, clarifies interaction between $4008/400B and linear counter.
+- **test_vrc7** - Examines properties of the VRC7 "test" register $0F.
 
 NSF2 tests: (to test NSF players for [NSF2](https://wiki.nesdev.com/w/index.php/NSF2) support)
 - **nsf2_init_play** - The non-returning INIT and NMI-driven PLAY feature.
