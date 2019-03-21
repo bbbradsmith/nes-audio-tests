@@ -191,13 +191,13 @@ play_tone:
 	jsr swap_delay ; 2s
 	rts
 
-lfo_reset: ; note: doesn't seem to reset vibrato LFO, just tremolo?
-	lda #$40
-	sta $E000
-	jsr swap_delay_frame
-	lda #$00
-	sta $E000
-	jsr swap_delay_frame
+lfo_reset:
+	ldy #$06 ; bit 1 = LFO reset/halt, bit 2 = PG reset/halt
+	ldx #$0F
+	jsr reg_write
+	ldy #$00
+	ldx #$0F
+	jsr reg_write
 	rts
 
 ; end of file
