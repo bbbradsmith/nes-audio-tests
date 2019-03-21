@@ -20,7 +20,7 @@ Some people are uncomfortable with the idea of hotswapping cartridges. It has be
 
 
 Other tests: (these are not survey tests, merely part of my personal ongoing investigations)
-- **patch_vrc7** - Comparison of prospective VRC7 built-in patch set against the actual set. Hotswap.
+- **patch_vrc7** - Comparison of prospective VRC7 built-in patch set against the actual set. ([reference recording](http://rainwarrior.ca/projects/nes/patch_vrc7_nukeykt.flac))
 - **clip_vrc7** - Demonstration of clipping in the VRC7 amplifier.
 - **clip_5b** - Demonstration of compression in the 5B amplifier.
 - **noise_vrc7** - White noise to characterize the VRC7 filters.
