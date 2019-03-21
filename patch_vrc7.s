@@ -192,7 +192,34 @@ play_tone:
 	rts
 
 lfo_reset:
-	ldy #$06 ; bit 1 = LFO reset/halt, bit 2 = PG reset/halt
+	; not sure how much of this reset works, and what is superstition,
+	; but trying to get as close a match as possible.
+	; the chip reset does not reset vibrato LFO (but does reset tremolo)
+	; and the test register bit 1 does reset both of them.
+	; the rest of this may or may not help.
+	;
+	; chip reset
+	jsr init_vrc7 ; writes 0 to every register
+	jsr swap_delay_frame
+	lda #$40
+	sta $E000
+	jsr swap_delay_frame
+	lda #$00
+	sta $E000
+	jsr swap_delay_frame
+	; set instrument $F for consistent parameters?
+	ldy #$F0
+	ldx #$30
+	jsr reg_write
+	; lowest possible frequency for PG consistency?
+	ldy #$FF
+	ldx #$10
+	jsr reg_write
+	ldy #$01
+	ldx #$20
+	jsr reg_write
+	; test register $0F, bit 1 = LFO reset/halt, bit 2 = PG reset/halt
+	ldy #$06
 	ldx #$0F
 	jsr reg_write
 	ldy #$00
