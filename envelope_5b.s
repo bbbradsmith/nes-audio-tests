@@ -3,7 +3,8 @@
 ;   envelope and frequency tests for 5B expansion
 ;
 ;   3x 5B tone for 2 seconds + matching APU tone for 2 seconds
-;   3x 5B envelope for 2 seconds + matching APU tone for 2 seconds
+;   3x 5B sawtooth envelope for 2 seconds + matching APU tone for 2 seconds
+;   3x 5B triangle envelope for 2 seconds at period 0, 1, 2
 ;   10x single shot ramp envelope triggered 1 second apart, 50Hz step frequency
 ;
 ;   https://github.com/bbbradsmith/nes-audio-tests
@@ -43,7 +44,7 @@ test_data:
 .byte $00, %00110000 ; APU: narrow pulse, constant, 0 volume
 .byte $03, $F0 ; APU activate channel
 .byte DELAY, 60
-; 3x on adjacent period valules:
+; 3x on adjacent period values:
 ; 5B plays 2 second tone
 ; APU adds 2 second tone (narrow pulse) at equivalent frequency
 ; 1 second pause
@@ -59,13 +60,14 @@ BASE_TONE = 25
 	.byte $00, %00110000
 	.byte DELAY, 60
 .endrepeat
-; 5B envelope plays 2 second tone
+; 3x on adjacent period values:
+; 5B envelope plays 2 second tone (saw)
 ; APU adds 2 second tone (narrow pulse) at equivalent frequency
 ; 1 second pause
 BASE_ENV = 4
 .repeat 3, I
 	.byte REG, $0B, BASE_ENV + I ; envelope period
-	.byte REG, $0D, $08 ; envelope
+	.byte REG, $0D, $08 ; sawtooth
 	.byte REG, $07, %00111111
 	.byte REG, $08, $10 ; play envelope on channel
 	.byte DELAY, 120
@@ -74,6 +76,18 @@ BASE_ENV = 4
 	.byte DELAY, 120
 	.byte REG, $08, $00
 	.byte $00, %10110000
+	.byte DELAY, 60
+.endrepeat
+; 3x on period 0, 1, 2:
+; 5B envelope plays 2 second tone (triangle)
+; 1 second pause
+.repeat 3, I
+	.byte REG, $0B, I
+	.byte REG, $0D, $0A ; triangle
+	.byte REG, $07, %00111111
+	.byte REG, $08, $10 ; play envelope
+	.byte DELAY, 120
+	.byte REG, $08, $00
 	.byte DELAY, 60
 .endrepeat
 ; envelope sync test
