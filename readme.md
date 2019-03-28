@@ -26,6 +26,7 @@ Other tests: (these are not survey tests, merely part of my personal ongoing inv
 - **noise_vrc7** - White noise to characterize the VRC7 filters.
 - **noise_5b** - White noise to characterize the 5B filters.
 - **sweep_5b** - Frequency sweep and noise to characterize the 5B filters. (Good for APU too.)
+- **envelope_5b** - Frequency and phase reset verification for 5B envelope and tones.
 - **nsf_init_y** - 8 bit beep readout of Y register value passed to INIT.
 - **tri_silence** - Tests various ways of silencing the triangle, clarifies interaction between $4008/400B and linear counter.
 - **test_vrc7** - Examines properties of the VRC7 "test" register $0F.
