@@ -3,12 +3,28 @@
 ;   tone phase tests for 5B expansion
 ;
 ;   1. alternate between $FFF and $000 periods 12x (1/3 second each)
-;     - when switching to $000, play a quiet 8000Hz tone to mark the transition
+;     - when switching to $000, play a quiet 4000Hz tone to mark the transition
 ;     - note that the long period does not have to finish before the short period takes effect
 ;     - note lack of determinism for beginnign phase of $FFF (50/50 chance of up or down)
 ;   2. interrupt $FFF tone with very short periods of $000
 ;     - note that that makes an effective half-phase "reset"
 ;   3. additional test of low volume tone to verify that 0 is actually silent
+;     - plays a short 3 tone melody at volumes 2, 1, 0, 3
+;   4. additional test of volume 0 vs envelope 0,1,2,3:
+;      1 second of 4000Hz tone at volume 0 (silent)
+;      2 seconds of rising ramp envelope at 2.1Hz rate, 4+ steps: 0,1,2,3(,4)
+;      1 second of tone at volume 0
+;      2 seconds of rising ramp envelope at 2.1Hz rate, 4+ steps: 0,1,2,3(,4)
+;      1/2 second of tone at volume 1
+;      1/2 second of tone at volume 2
+;      1 second of volume 0 (silence)
+;      1 second of tone at volume 15
+;      2 seconds of falling ramp envelope
+;      1 second of tone at volume 15
+;      2 seconds of falling ramp envelope
+;      1/2 second of tone at volume 15
+;      1/2 second of tone at volume 14
+;      1/2 second of tone at volume 13
 ;
 ;   https://github.com/bbbradsmith/nes-audio-tests
 ;
@@ -42,7 +58,7 @@ test_data:
 .byte INIT_5B, 0
 .byte DELAY, 60
 ; setup
-.byte REG, $02, 13 ; ~8000Hz "signal" tone on channel 2 to show where change was made
+.byte REG, $02, 13 ; ~4000Hz "signal" tone on channel 2 to show where change was made
 .byte REG, $09, 3  ; channel 2 volume 3 (not enabled yet)
 .byte REG, $08, 9  ; channel 1 volume 9 (not enabled yet)
 .repeat 12
@@ -86,7 +102,55 @@ test_data:
 .endrepeat
 .byte INIT_5B, 0
 .byte DELAY, 60
-; loop
+; test of volume 0 vs disabled tone or envelope 0
+.byte REG, $00, 13 ; 8000 signal just to make sure it comes through
+; tone enable, volume 0
+.byte REG, $07, %00111110
+.byte DELAY, 60
+; tone + envelope rising from 0
+ENV_2HZ = 53267 ; 2.1Hz
+.byte REG, $0B, <ENV_2HZ
+.byte REG, $0C, >ENV_2HZ
+.byte REG, $0D, $0D ; one-shot rising ramp
+.byte REG, $08, $10 ; enable envelope instead of volume
+.byte DELAY, 120 ; execute 4+ steps of envelope
+.byte REG, $08, $00 ; return to 0
+.byte DELAY, 60
+; repeat tone+envelope rise
+.byte REG, $0D, $0D
+.byte REG, $08, $10
+.byte DELAY, 120
+; volume 1 and 2 for comparison
+.byte REG, $08, $01
+.byte DELAY, 30
+.byte REG, $08, $02
+.byte DELAY, 30
+; 1 second silence
+.byte REG, $08, $00
+.byte DELAY, 60
+; tone at volume 15
+.byte REG, $08, $0F
+.byte DELAY, 60
+; tone + envelope falling from maximum
+.byte REG, $0D, $01 ; one-shot falling ramp
+.byte REG, $08, $10
+.byte DELAY, 120 ; execute 4+ steps of envelope
+.byte REG, $08, $0F ; return to 15
+.byte DELAY, 60
+; repeat tone + envelope fall
+.byte REG, $0D, $01
+.byte REG, $08, $10
+.byte DELAY, 120 ; execute 4+ steps of envelope
+; volume 15, 14, 13 for comparison
+.byte REG, $08, $0F
+.byte DELAY, 30
+.byte REG, $08, $0E
+.byte DELAY, 30
+.byte REG, $08, $0D
+.byte DELAY, 30
+; end
+.byte REG, $08, $00
+.byte DELAY, 60
 .byte LOOP
 
 reg:
