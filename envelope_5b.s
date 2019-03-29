@@ -1,5 +1,5 @@
 ;
-; envelop_5b.s
+; envelope_5b.s
 ;   envelope and frequency tests for 5B expansion
 ;
 ;   3x 5B tone for 2 seconds + matching APU tone for 2 seconds
@@ -12,7 +12,7 @@
 
 .include "swap.inc"
 
-NSF_STRINGS "noise_5b test", "Brad Smith", "2018 nes-audio-tests"
+NSF_STRINGS "envelope_5b test", "Brad Smith", "2019 nes-audio-tests"
 NSF_EXPANSION = %00100000
 INES2_REGION = 0 ; NTSC only
 

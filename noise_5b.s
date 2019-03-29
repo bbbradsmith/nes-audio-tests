@@ -12,7 +12,7 @@
 
 .include "swap.inc"
 
-NSF_STRINGS "noise_5b test", "Brad Smith", "2018 nes-audio-tests"
+NSF_STRINGS "noise_5b test", "Brad Smith", "2019 nes-audio-tests"
 NSF_EXPANSION = %00100000
 INES2_REGION = 0 ; NTSC only
 
