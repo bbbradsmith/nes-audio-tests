@@ -16,6 +16,8 @@ import wave
 import struct
 import math
 import matplotlib.pyplot as pyplot
+import numpy
+import os.path
 
 BASE_FREQ = 1789772 / 4064 # approximated 440Hz
 
@@ -40,6 +42,11 @@ def sum_squares(w, s0, s1):
     return sum_squares(w,s0,m) + sum_squares(w,m+1,s1)
 
 def dac_square(filename, sample1, sample255):
+    # use cached results if they exist
+    cache_filename = filename+"_%d_%d.array" % (sample1,sample255)
+    if os.path.exists(cache_filename) and (os.path.getmtime(filename) < os.path.getmtime(cache_filename)):
+        return numpy.loadtxt(cache_filename)
+    # load waveform and measure tests
     (w,sr) = loadwave(filename)
     stest = (sample255-sample1)/254 # samples per test
     swindow = stest * 1.0 / 2.5 # samples per central window of test (1.0 seconds)
@@ -58,27 +65,61 @@ def dac_square(filename, sample1, sample255):
         print("%d, %d, %f" % (s0,s1,rms))
         #print("%d, %d, %f (%d - %d)" % (s0,s1,rms,test_start,test_end+1))
         graph[s0].append(rms)
+    numpy.savetxt(cache_filename,graph) # cache results
     return graph
 
-def plot_normalized(graph, color):
+def normalize(graph):
+    # normalize based on maximum:
     #m = graph[0][0]
     #for g in graph:
     #    for v in g:
     #        if v > m:
     #            m = v
+    # normalize based on average of 1 square at full volume
     m = (graph[0][15] + graph[15][0]) / 2
-    for i in range(len(graph)):
-        g = graph[i]
-        gx = [r+i for r in range(len(g))]
-        gy = [v/m for v in g]
-        pyplot.plot(gx,gy,color=color,linewidth=0.5,label="%d"%i)
+    return [[v/m for v in row] for row in graph]
 
+def table(graph):
+    s = "Square 0 \ Square 1"
+    for i in range(len(graph[0])):
+        s += ", %2d" % i
+    print(s)
+    for i in range(len(graph)):
+        s = "%2d" % i
+        for v in graph[i]:
+            s += ", %8.4f" % v
+        print(s)
+
+def symmetry(graph):
+    assert(len(graph)==len(graph[0]))
+    axis = []
+    for i in range((len(graph)*2)-1):
+        accum = 0
+        count = 0
+        for j in range(len(graph)):
+            if ((i-j) < 0) or ((i-j) >= len(graph)):
+                continue
+            accum += graph[i-j][j]
+            count += 1
+        axis.append(accum/count)
+    return [[graph[i][j]-axis[i+j] for j in range(len(graph[i]))] for i in range(len(graph))]
+
+def plot(graph, color, normalized=True):
+    if normalized:
+        graph = normalize(graph)
+    for i in range(len(graph)):
+        gy = graph[i]
+        gx = [r+i for r in range(len(gy))]
+        pyplot.plot(gx,gy,color=color,linewidth=0.5,label="%d"%i)
 
 gl = [[a+b for b in range(16)] for a in range(16)] # linear
 gb = [[min(a+b,1)*95.88/((8128/(a+b+(1-min(a+b,1))))+100) for b in range(16)] for a in range(16)] # blargg
-g1 = dac_square("dac_square_test.wav",232766,30658550)
+g1 = dac_square("dac_square.wav",232766,30658550)
 
-plot_normalized(gl, "#00FF00")
-plot_normalized(gb, "#0000FF")
-plot_normalized(g1, "#FF0000")
+table(normalize(g1))
+table(symmetry(normalize(g1)))
+
+plot(gl, "#00FF00")
+plot(gb, "#0000FF")
+plot(g1, "#FF0000")
 pyplot.show()
