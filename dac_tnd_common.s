@@ -97,7 +97,8 @@ dmc_triangle:
 	nop3                    ; +3 =  96
 	nop                     ; +2 =  98
 	nop                     ; +2 = 100
-	dec dmc_loops           ; +5 = 105
+	nop                     ; +2 = 102
+	dec dmc_loops           ; +5 = 107
 	bne @sample256          ; +3 = 110
 	assert_branch_page @sample256
 	; finish with 0.5s silence
@@ -117,9 +118,10 @@ dmc_noise:
 	sta dmc_loops
 	;         cycles since last sample
 @sample256:
-	;                              450
-	ldx #0                  ; +2 = 452
+	;                              428
+	ldx #0                  ; +2 = 430
 @sample:
+	;                       ;    = 430
 	; NTSC requires 36 more cycles than PAL
 	.if INES2_REGION <> 1
 	    jsr swap_delay_24   ;+24 = 454
@@ -145,34 +147,33 @@ dmc_noise:
 	assert_branch_page :+
 	    nop3                ; +3 = 506
 	    nop                 ; +2 = 508
-	    sty $4011           ; +4 =   0
-	    jmp :++             ; +3 =   3
+	    ; write sample      ;    =   0
+	    sty $4011           ; +4 =   4
+	    jmp :++             ; +3 =   7
 	:
 	;bcc :+                 ; +3 = 504
 	    nop                 ; +2 = 506
 	    lda #0              ; +2 = 508
-	    sta $4011           ; +4 =   0
-	    nop3                ; +3 =   3
+	    ; write sample      ;    =   0
+	    sta $4011           ; +4 =   4
+	    nop3                ; +3 =   7
 	:
-	inx                     ; +2 =   5
-	beq @sample256_next     ; +2 =   7
+	inx                     ; +2 =   9
+	beq @sample256_next     ; +2 =  11
 	assert_branch_page @sample256_next
-	jsr swap_delay_384      ;384 = 391
-	jsr swap_delay_48       ;+48 = 439
-	nop                     ; +2 = 441
-	nop                     ; +2 = 443
-	nop                     ; +2 = 445
-	nop                     ; +2 = 447
-	nop                     ; +2 = 449
-	jmp @sample             ; +3 = 452
+	jsr swap_delay_384      ;384 = 395
+	jsr swap_delay_24       ;+24 = 419
+	nop                     ; +2 = 421
+	nop                     ; +2 = 423
+	nop                     ; +2 = 425
+	nop                     ; +2 = 427
+	jmp @sample             ; +3 = 430
 @sample256_next:
-	;beq @sample256_next    ; +3 =   8
-	jsr swap_delay_384      ;384 = 392
-	jsr swap_delay_48       ;+48 = 440
-	nop                     ; +2 = 442
-	nop                     ; +2 = 444
-	dec dmc_loops           ; +5 = 449
-	bne @sample256          ; +3 = 452
+	;beq @sample256_next    ; +3 =  12
+	jsr swap_delay_384      ;384 = 396
+	jsr swap_delay_24       ;+24 = 420
+	dec dmc_loops           ; +5 = 425
+	bne @sample256          ; +3 = 428
 	assert_branch_page @sample256
 	; finish with 0.5s silence
 	jmp dmc_finish_silence
