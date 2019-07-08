@@ -13,6 +13,7 @@
 .importzp SKIP_HOTSWAP
 
 .export swap_load_partial
+.export swap
 
 .include "swap.inc"
 

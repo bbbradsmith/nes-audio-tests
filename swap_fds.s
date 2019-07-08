@@ -6,6 +6,7 @@
 
 .include "swap.inc"
 .import swap_load_partial
+.import swap
 
 .segment "FDS"
 
