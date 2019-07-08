@@ -17,8 +17,18 @@
 .export dmc_noise
 .export dmc_noise_init
 
+; plays simulated square (period 253) on DAC for 2s + .5s silence
+; Y = volume (0-127)
+.export dmc_square
+
 INES2_REGION = 0 ; 1 for PAL region
 .exportzp INES2_REGION
+
+; These routines aren't intended for hotswaps,
+; but moving them to SWAP instead of SHARED,
+; and changing this to 0 would be sufficient to allow it.
+SKIP_HOTSWAP = 1
+.exportzp SKIP_HOTSWAP
 
 .include "swap.inc"
 
@@ -38,11 +48,11 @@ triangle_table_add: .res 1
 dmc_loops: .res 1
 noise_lfsr: .res 1
 
-.segment "SWAP"
+.segment "SHARED"
 
-.align 128
 ; 32 bytes 0-15, 15-0
 ; repeated 4x as: *1, *2, *4, *8
+.align 128
 triangle_table:
 	.repeat 4, M
 		.repeat 16, I
@@ -55,8 +65,8 @@ triangle_table:
 
 ; plays ~2 second triangle + 0.5s silence
 ; 127 cycles per sample (440.40 Hz)
-; equivalent to triangle with period register 126)
-.align 128
+; equivalent to triangle with period register 126
+.align 64
 dmc_triangle:
 	; Y = 0,1,2,3 (<< on output)
 	tya
@@ -71,7 +81,7 @@ dmc_triangle:
 	sta dmc_loops
 	;         cycles since last sample
 @sample256:
-	;                              110
+	;                       ;    = 110
 	ldx #0                  ; +2 = 112
 @sample:
 	txa                     ; +2 = 114
@@ -111,14 +121,14 @@ dmc_finish_silence:
 ; plays ~2 second noise + 0.5s silence
 ; 508 NTSC (472 PAL) cycles per sample (3523 Hz)
 ; equivalent to noise with period register $B
-.align 128
+.align 64
 dmc_noise:
 	; Y = volume of output
 	lda #28 ; 28 * 256 * 508 = 3641344 cycles = 2.035 seconds
 	sta dmc_loops
 	;         cycles since last sample
 @sample256:
-	;                              428
+	;                       ;    = 428
 	ldx #0                  ; +2 = 430
 @sample:
 	;                       ;    = 430
@@ -184,5 +194,52 @@ dmc_noise_init:
 	iny
 	sty noise_lfsr+0
 	rts
+
+; plays ~2 second square + 0.5s silence
+; 2032 cycles per flip (440.40 Hz)
+; equivalent to square with period register 253
+.align 64
+dmc_square:
+	; Y = volume of output
+	; 886 * 4064 = 3600704 cycles = 2.012 seconds
+	lda #1+>886
+	sta dmc_loops
+	ldx #256-<886
+	lda #0
+	jmp @sample
+@sample256:
+	;                       ;     = 2030
+	ldx #0                  ;  +2 = 2032
+@sample:
+	; high sample           ;     =    0
+	sty $4011               ;  +4 =    4
+	jsr swap_delay_1536     ;1536 = 1540
+	jsr swap_delay_384      ;+384 = 1924
+	jsr swap_delay_96       ; +96 = 2020
+	jsr swap_delay_12       ; +12 = 2032
+	; low sample            ;     =    0
+	sta $4011               ;  +4 =    4
+	jsr swap_delay_1536     ;1536 = 1540
+	jsr swap_delay_384      ;+384 = 1924
+	jsr swap_delay_48       ; +48 = 1972
+	inx                     ;  +2 = 1974
+	beq @sample256_next     ;  +2 = 1976
+	assert_branch_page @sample256_next
+	jsr swap_delay_48       ; +48 = 2024
+	nop3                    ;  +3 = 2027
+	nop                     ;  +2 = 2029
+	jmp @sample             ;  +3 = 2032
+@sample256_next:
+	;beq @sample256_next    ;  +3 = 1977
+	jsr swap_delay_24       ; +24 = 2001
+	jsr swap_delay_12       ; +12 = 2013
+	nop3                    ;  +3 = 2016
+	nop                     ;  +2 = 2018
+	nop                     ;  +2 = 2020
+	dec dmc_loops           ;  +5 = 2025
+	bne @sample256          ;  +3 = 2030
+	assert_branch_page @sample256
+	; finish with 0.5s silence
+	jmp dmc_finish_silence
 
 ; end of file
