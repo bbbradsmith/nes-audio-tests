@@ -86,7 +86,7 @@ nsf_init2:
 
 	; play one tick of song
 
-vbl_loop:0
+vbl_loop:
 	lda   nmi_count         ; wait for NMI
 :
 	cmp   nmi_count
