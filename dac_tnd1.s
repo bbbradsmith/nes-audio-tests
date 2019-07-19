@@ -3,9 +3,20 @@
 ;   test of APU triangle/noise/DMC nonlinear DAC
 ;   https://github.com/bbbradsmith/nes-audio-tests
 ;
-
+; Test how DMC level affects noise and triangle
+; 
+; 
+; 0:00-1:29 - DMC at levels 0-15*8 (short)
+; 1:29-13:11 - DMC at levels 0-127 (long)
 ;
-; TODO description
+; For each test:
+;   DMC level is set (0.5s)
+;   Triangle at 440 Hz (2s)
+;   Silent (0.5s)
+;   Noise at period $B (2s)
+;   Silent (0.5s)
+;
+; When "silent" triangle is playing at max frequency (ultrasonic).
 ;
 ; See misc/dac_tnd.py for a program to analyze the output.
 ;
@@ -34,6 +45,7 @@ test_registers: ; $20
 .import tri_440
 .import tri_min_cycle
 .import noise_b
+.import square_440
 
 test_routines: ; $40
 .word dmc_triangle
@@ -45,6 +57,7 @@ test_routines: ; $40
 .word tri_440
 .word tri_min_cycle
 .word noise_b
+.word square_440
 DMC_TRIANGLE   = $40 ; arg = 0,1,2,3
 DMC_NOISE      = $41 ; arg = 0-127
 DMC_NOISE_INIT = $42 ; arg ignored
@@ -54,13 +67,29 @@ TRI_MAX        = $45 ; arg ignored
 TRI_440        = $46 ; arg ignored
 TRI_MIN_CYCLE  = $47 ; arg ignored
 NOISE_B        = $48 ; arg = 0-15
+SQUARE_440     = $49 ; arg = 0-15
 
 test_data:
 .byte BUZZ, 50
 .byte INIT_APU, 0
+.byte DMC_NOISE_INIT, 0
+.byte TRI_MAX, 0
 .byte DELAY, 60
-; TODO
-.byte DELAY, 60
+; 16 DMC levels
+.repeat 16, I
+	.byte $11, (I*8) ; DMC level
+	.byte DELAY, 30
+	.byte TRI_440, 0
+	.byte NOISE_B, 15
+.endrepeat
+; 128 DMC levels
+.repeat 128, I
+	.byte $11, I
+	.byte DELAY, 30
+	.byte TRI_440, 0
+	.byte NOISE_B, 15
+.endrepeat
+; finish
 .byte LOOP
 
 ; end of file

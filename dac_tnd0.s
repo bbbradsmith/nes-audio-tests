@@ -3,6 +3,8 @@
 ;   test of APU triangle/noise/DMC nonlinear DAC
 ;   https://github.com/bbbradsmith/nes-audio-tests
 ;
+; Summary test of APU 2 DAC
+;
 ; 0:00-0:14 - Triangle and DMC
 ;    Triangle A440
 ;    DMC triangle simulation volume 15,30,60,120
@@ -15,6 +17,8 @@
 ; 2:47-8:11 - Square DMC exhaustive
 ;    Square A440 volume 15
 ;    DMC square simulation volume 1-127
+;
+; When "silent" triangle is playing at max frequency (ultrasonic).
 ;
 ; See misc/dac_tnd.py for a program to analyze the output.
 ;
