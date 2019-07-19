@@ -267,7 +267,7 @@ tri_setup:
 
 tri_min:
 	jsr tri_setup
-	;lda #$FF
+	lda #$FF
 	sta $400A ; freq low = $FF
 	lda #$FF
 	sta $400B ; freq high = $7, reload counter

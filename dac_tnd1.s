@@ -5,7 +5,6 @@
 ;
 ; Test how DMC level affects noise and triangle
 ; 
-; 
 ; 0:00-1:29 - DMC at levels 0-15*8 (short)
 ; 1:29-13:11 - DMC at levels 0-127 (long)
 ;

@@ -34,6 +34,7 @@ test_registers: ; $20
 .import tri_440
 .import tri_min_cycle
 .import noise_b
+.import square_440
 
 test_routines: ; $40
 .word dmc_triangle
@@ -45,6 +46,7 @@ test_routines: ; $40
 .word tri_440
 .word tri_min_cycle
 .word noise_b
+.word square_440
 DMC_TRIANGLE   = $40 ; arg = 0,1,2,3
 DMC_NOISE      = $41 ; arg = 0-127
 DMC_NOISE_INIT = $42 ; arg ignored
@@ -54,6 +56,7 @@ TRI_MAX        = $45 ; arg ignored
 TRI_440        = $46 ; arg ignored
 TRI_MIN_CYCLE  = $47 ; arg ignored
 NOISE_B        = $48 ; arg = 0-15
+SQUARE_440     = $49 ; arg = 0-15
 
 test_data:
 .byte BUZZ, 50
