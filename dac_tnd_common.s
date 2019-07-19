@@ -21,6 +21,24 @@
 ; Y = volume (0-127)
 .export dmc_square
 
+; begins playing triangle at frequency minimum, maximum, 440Hz
+.export tri_min ; 2048 cy step, 65536 cy period, 27.310 Hz
+.export tri_max ; 1 cy step, 32 cy period, 55930 Hz
+
+; plays triangle 440Hz for 2s + .5s "silence" (tri max)
+.export tri_440 ; 127 cy step, 4064 cy period, 440.40 Hz
+
+; un-halt a tri_min for 1 second and halt again after advancing a single step
+.export tri_min_cycle
+
+; plays noise channel (period $B) for 2s + .5s silence
+; Y = volume (0-15)
+.export noise_b
+
+; plays square 440Hz for 2s + .5s silence
+; Y = volume (0-15)
+.export square_440
+
 INES2_REGION = 0 ; 1 for PAL region
 .exportzp INES2_REGION
 
@@ -241,5 +259,102 @@ dmc_square:
 	assert_branch_page @sample256
 	; finish with 0.5s silence
 	jmp dmc_finish_silence
+
+tri_setup:
+	lda #$FF
+	sta $4008 ; freeze length/linear counter
+	rts
+
+tri_min:
+	jsr tri_setup
+	;lda #$FF
+	sta $400A ; freq low = $FF
+	lda #$FF
+	sta $400B ; freq high = $7, reload counter
+	rts
+
+tri_max:
+	jsr tri_setup
+	lda #0
+	sta $400A ; freq low = 0
+	lda #$F0
+	sta $400B ; freq high = 0, reload counter
+	rts
+
+tri_440:
+	jsr tri_setup
+	lda #126
+	sta $400A
+	lda #$F0
+	sta $400B
+	ldy #120
+	jsr swap_delay
+	jsr tri_max ; "silence" via max frequency
+	ldy #30
+	jmp swap_delay
+
+; succinct longer cycle delays
+;                                                internal => from jsr (+6)
+long_delay6: jsr long_delay5 ; (786810 * 2) + 6 = 1573626 => 1573632
+long_delay5: jsr long_delay4 ; (393402 * 2) + 6 = 786810  =>  786816
+long_delay4: jsr long_delay3 ; (196698 * 2) + 6 = 393402  =>  393408
+long_delay3: jsr long_delay2 ; (98346  * 2) + 6 = 196698  =>  196704
+long_delay2: jsr long_delay1 ; (49170  * 2) + 6 = 98346   =>   98352
+long_delay1: jsr long_delay0 ; (24582  * 2) + 6 = 49170   =>   49176
+long_delay0: jsr swap_delay_24576 ;  24576  + 6 = 24582   =>   24588
+	rts ; + 6
+
+tri_min_cycle:
+	lda #%00001111
+	sta $4015
+	lda #$FF
+	sta $400B ; freq high = $7, reload length counter (resume)
+	; each step is 2048 cycles
+	; ~1 second delay is about 27 periods
+	; run for ~1 second + 1 step:
+	; ((27 * 32) + 1) * 2048 = 1771520 cycles
+	jsr long_delay6 ; 1771520 - 1573632 = 197888
+	jsr long_delay3 ; 197888 - 196704 = 1184
+	jsr swap_delay_768 ; 1184 - 768 = 416
+	jsr swap_delay_384 ; 416 - 384 = 32
+	jsr swap_delay_24 ; 32 - 24 = 8
+	nop ; 8 - 2 = 6
+	lda #%00001011   ; 6 - 2 = 4
+	sta $4015 ; 4 - 4 = 0 (triangle off)
+	rts
+
+; plays 2 second noise + 0.5s silence (period $B)
+; Y = volume (0-15)
+noise_b:
+	tya
+	ora #%00110000
+	sta $400C ; freeze length counter, constant volume
+	lda #$0B
+	sta $400E ; period = $B (not periodic)
+	lda #$FF
+	sta $400F ; reload counter
+	ldy #120
+	jsr swap_delay
+	lda #%00110000
+	sta $400C ; silence
+	ldy #30
+	jmp swap_delay
+
+; plays 2 seconds square + 0.5s silence (period 253 = 440Hz)
+; Y = volume (0-15)
+square_440:
+	tya
+	ora #%10110000 ; square duty, constant volume
+	sta $4000
+	lda #253 ; (253+1)*16 = 4064 cycle square = ~440.40 Hz
+	sta $4002
+	lda #$F0
+	sta $4003 ; begin
+	ldy #120
+	jsr swap_delay
+	lda #%10110000
+	sta $4000 ; silence
+	ldy #30
+	jmp swap_delay
 
 ; end of file
