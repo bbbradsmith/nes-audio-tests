@@ -5,7 +5,7 @@
 ;
 ; Test of how triangle level affects noise and DMC
 ;
-; 0:00-9:09
+; 00:00-09:09
 ;
 ; For each test (repeated 33 times):
 ;   Triangle is unhalted for ~1s + 1 waveform step

@@ -3,9 +3,14 @@
 ;   test of APU triangle/noise/DMC nonlinear DAC
 ;   https://github.com/bbbradsmith/nes-audio-tests
 ;
-
+; Test of how DMC level affects noise
 ;
-; TODO description
+; 00:00-10:08 - DMC at levels 0-15*8
+; For each test:
+;   DMC level is set  (0.5s)
+;   Noise at period $B volumes 1-15 (each 2s + 0.5s silence)
+;
+; When "silent" triangle is playing at max frequency (ultrasonic).
 ;
 ; See misc/dac_tnd.py for a program to analyze the output.
 ;
@@ -61,8 +66,16 @@ SQUARE_440     = $49 ; arg = 0-15
 test_data:
 .byte BUZZ, 50
 .byte INIT_APU, 0
+.byte DMC_NOISE_INIT, 0
+.byte TRI_MAX, 0
 .byte DELAY, 60
-; TODO
+.repeat 16, I
+	.byte $11, (I*8) ; DMC level
+	.byte DELAY, 30
+	.repeat 15, J
+		.byte NOISE_B, (J+1)
+	.endrepeat
+.endrepeat
 .byte DELAY, 60
 .byte LOOP
 

@@ -5,16 +5,16 @@
 ;
 ; Summary test of APU 2 DAC
 ;
-; 0:00-0:14 - Triangle and DMC
+; 00:00-00:14 - Triangle and DMC
 ;    Triangle A440
 ;    DMC triangle simulation volume 15,30,60,120
-; 0:14-1:31 - Noise and DMC
+; 00:14-01:31 - Noise and DMC
 ;    Noise period $B volume 1-15
 ;    DMC noise simulation volume 1-15*8
-; 1:31-2:47 - Square and DMC
+; 01:31-02:47 - Square and DMC
 ;    Square A440 volume 1-15
 ;    DMC square simulation volume 1-15*8
-; 2:47-8:11 - Square DMC exhaustive
+; 02:47-08:11 - Square DMC exhaustive
 ;    Square A440 volume 15
 ;    DMC square simulation volume 1-127
 ;
