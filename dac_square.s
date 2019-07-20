@@ -38,11 +38,10 @@ DAC_SQUARE_TEST = $40 ; arg = 0-255
 dac_square_test:
 	ldx #0
 @loop:
-	; resynchronize
-	lda #0
-	sta $4002
-	sta $4006
-
+	; clear high frequency (redundant)
+	lda #$F8
+	sta $4003
+	sta $4007
 	; set two volumes from X nibbles
 	txa
 	lsr
@@ -56,8 +55,8 @@ dac_square_test:
 	ora #%10110000
 	sta $4000
 	sty $4004
-	; reset phase
-	lda #0 ; shortest possible step period to synchronize period counters
+	; shortest possible step period to synchronize period counters
+	lda #0
 	sta $4002
 	sta $4006
 	lda #<PERIOD ; A440

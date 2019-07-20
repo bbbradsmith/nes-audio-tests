@@ -75,7 +75,7 @@ def dac_square_normalize(results):
 def dac_square(filename, start, end):
     print("dac_square('%s',%d,%d)" % (filename, start, end))
     # reference [ start, end, 1s of silence, centre of 1st tone, centre of last tone ]
-    reference = [ 780282, 31551285, 877615, 996729, 31421137 ]
+    reference = [ 248593, 31023575, 342288, 464054, 30893207 ]
     reference = remap_reference(reference, start, end)
     # use cached results if they exist
     cache_filename = filename+"_%d_%d.array" % (start,end)
@@ -136,7 +136,7 @@ def symmetry_dac_square(name, results):
     graph = [[graph[i][j]-axis[i+j] for j in range(len(graph[i]))] for i in range(len(graph))]
     table_2D(graph, "Square 0", "Square 1")
 
-square_nes = dac_square("dac_square_nes.wav", 780282, 31551285)
+square_nes = dac_square("dac_square_nes.wav", 248593, 31023575)
 square_famicom = dac_square("dac_square_famicom.wav", 203497, 30974739)
 square_nsfplay = dac_square("dac_square_nsfplay.wav", 16420, 30791622)
 square_linear = dac_square_linear()
@@ -148,7 +148,7 @@ symmetry_dac_square("square_nsfplay",square_nsfplay)
 
 plot_dac_square(square_linear ,"#00FF00")
 plot_dac_square(square_blargg ,"#0000FF")
+plot_dac_square(square_nsfplay,"#00FFFF")
 plot_dac_square(square_famicom,"#FF00FF")
 plot_dac_square(square_nes    ,"#FF0000")
-plot_dac_square(square_nsfplay,"#00FFFF")
 pyplot.show()
