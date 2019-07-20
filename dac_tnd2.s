@@ -12,11 +12,13 @@
 ;   Noise at period $B volumes 1, 8, 15
 ;   DMC simulated noise volumes 8, 64, 120
 ;
-; Though the starting phase of the triangle will be unknown,
-; this test will cycle through all 32 positions of its waveform
-; to test the noise/DMC levels against.
+; If played from reset the starting phase of the triangle will be 0,
+; but if not played from reset the starting phase will be unknown.
+; However, this test will cycle through all 32 positions
+; of its waveform to test the noise/DMC levels against,
+; so all variations will be present regardless of starting phase.
 ;
-; See misc/dac_tnd.py for a program to analyze the output.
+; See misc/dac.py for a program to analyze the output.
 ;
 
 .include "swap.inc"

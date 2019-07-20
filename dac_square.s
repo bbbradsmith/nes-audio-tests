@@ -3,13 +3,13 @@
 ;   test of APU square nonlinear DAC
 ;   https://github.com/bbbradsmith/nes-audio-tests
 ;
-
+; 00:00-10:40
 ;
 ; This produces a 2 second A440 square wave on one or both APU square channels,
 ; using all 256 possible combinations of volume setting.
 ; Each tone is separated by 1/2 second of silence.
 ;
-; See misc/dac_square.py for a program to analyze the output.
+; See misc/dac.py for a program to analyze the output.
 ;
 
 .include "swap.inc"

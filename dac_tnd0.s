@@ -20,7 +20,7 @@
 ;
 ; When "silent" triangle is playing at max frequency (ultrasonic).
 ;
-; See misc/dac_tnd.py for a program to analyze the output.
+; See misc/dac.py for a program to analyze the output.
 ;
 
 .include "swap.inc"
