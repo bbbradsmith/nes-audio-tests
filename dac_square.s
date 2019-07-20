@@ -26,6 +26,8 @@ SKIP_HOTSWAP = 1
 
 .segment "SWAP"
 
+PERIOD = 253  ; (253+1)*16 = 4064 cycle square = ~440.40Hz
+
 test_registers: ; $20
 ; not used
 
@@ -36,6 +38,11 @@ DAC_SQUARE_TEST = $40 ; arg = 0-255
 dac_square_test:
 	ldx #0
 @loop:
+	; resynchronize
+	lda #0
+	sta $4002
+	sta $4006
+
 	; set two volumes from X nibbles
 	txa
 	lsr
@@ -50,7 +57,13 @@ dac_square_test:
 	sta $4000
 	sty $4004
 	; reset phase
-	lda #$F0
+	lda #0 ; shortest possible step period to synchronize period counters
+	sta $4002
+	sta $4006
+	lda #<PERIOD ; A440
+	sta $4002
+	sta $4006
+	lda #($F8 | >PERIOD) ; reset phase
 	sta $4003
 	sta $4007
 	; 2 seconds
@@ -70,13 +83,6 @@ test_data:
 .byte BUZZ, 50
 .byte INIT_APU, 0
 .byte DELAY, 60
-; APU 440Hz squares
-.byte $00, %10110000 ; square duty, constant, zero volume
-.byte $04, %10110000
-.byte $02, 253 ; (253+1)*16 = 4064 cycle square = ~440.40Hz
-.byte $06, 253
-.byte $03, $F0 ; begin
-.byte $07, $F0
 .byte DAC_SQUARE_TEST, 0
 .byte DELAY, 60
 .byte LOOP
