@@ -12,7 +12,7 @@
 ; Y -> volume (0,1,2,3) = (15,30,60,120)
 .export dmc_triangle
 
-; plays simulated noise (period $B) on DAC for 2s + .5s silence
+; plays simulated noise (period $6) on DAC for 2s + .5s silence
 ; Y = volume (0-127)
 .export dmc_noise
 .export dmc_noise_init
@@ -31,9 +31,9 @@
 ; un-halt a tri_min for 1 second and halt again after advancing a single step
 .export tri_min_cycle
 
-; plays noise channel (period $B) for 2s + .5s silence
+; plays noise channel (period $6) for 2s + .5s silence
 ; Y = volume (0-15)
-.export noise_b
+.export noise_6
 
 ; plays square 440Hz for 2s + .5s silence
 ; Y = volume (0-15)
@@ -137,51 +137,54 @@ dmc_finish_silence:
 	jmp swap_delay
 
 ; plays ~2 second noise + 0.5s silence
-; 508 NTSC (472 PAL) cycles per sample (3523 Hz)
-; equivalent to noise with period register $B
+; 128 NTSC (118 PAL) cycles per sample (13983 Hz)
+; equivalent to noise with period register $6
 .align 64
 dmc_noise:
 	; Y = volume of output
-	lda #28 ; 28 * 256 * 508 = 3641344 cycles = 2.035 seconds
+	lda #109 ; 109 * 256 * 128 = 3571712 cycles = 1.996 seconds
 	sta dmc_loops
 	;         cycles since last sample
 @sample256:
-	;                       ;    = 428
-	ldx #0                  ; +2 = 430
+	;                       ;    =  74
+	ldx #0                  ; +2 =  76
 @sample:
-	;                       ;    = 430
-	; NTSC requires 36 more cycles than PAL
+	;                       ;    =  76
+	; NTSC requires 10 more cycles than PAL
 	.if INES2_REGION <> 1
-	    jsr swap_delay_24   ;+24 = 454
-	    jsr swap_delay_12   ;+12 = 466
+	    nop                 ; +2 =  78
+	    nop                 ; +2 =  80
+	    nop                 ; +2 =  82
+	    nop                 ; +2 =  84
+	    nop                 ; +2 =  86
 	.endif
 	; lsfr = lfsr << 1
-	lda noise_lfsr+1        ; +3 = 469
-	asl noise_lfsr+0        ; +5 = 474
-	rol noise_lfsr+1        ; +5 = 479
+	lda noise_lfsr+1        ; +3 =  89
+	asl noise_lfsr+0        ; +5 =  94
+	rol noise_lfsr+1        ; +5 =  99
 	; feedback = previous bits 13 ^ 14
-	eor noise_lfsr+1        ; +3 = 482
-	and #$40                ; +2 = 484
-	asl                     ; +2 = 486
-	asl                     ; +2 = 488
-	rol                     ; +2 = 490
+	eor noise_lfsr+1        ; +3 = 102
+	and #$40                ; +2 = 104
+	asl                     ; +2 = 106
+	asl                     ; +2 = 108
+	rol                     ; +2 = 110
 	; feedback into vacated bit 0
-	ora noise_lfsr+0        ; +3 = 493
-	sta noise_lfsr+0        ; +3 = 496
-	lda noise_lfsr+1        ; +3 = 499
+	ora noise_lfsr+0        ; +3 = 113
+	sta noise_lfsr+0        ; +3 = 116
+	lda noise_lfsr+1        ; +3 = 119
 	; output = previous bit 14 (now in 15)
-	rol                     ; +2 = 501
-	bcc :+                  ; +2 = 503
+	rol                     ; +2 = 121
+	bcs :+                  ; +2 = 123
 	assert_branch_page :+
-	    nop3                ; +3 = 506
-	    nop                 ; +2 = 508
+	    nop3                ; +3 = 126
+	    nop                 ; +2 = 128
 	    ; write sample      ;    =   0
 	    sty $4011           ; +4 =   4
 	    jmp :++             ; +3 =   7
 	:
-	;bcc :+                 ; +3 = 504
-	    nop                 ; +2 = 506
-	    lda #0              ; +2 = 508
+	;bcs :+                 ; +3 = 124
+	    nop                 ; +2 = 126
+	    lda #0              ; +2 = 128
 	    ; write sample      ;    =   0
 	    sta $4011           ; +4 =   4
 	    nop3                ; +3 =   7
@@ -189,19 +192,18 @@ dmc_noise:
 	inx                     ; +2 =   9
 	beq @sample256_next     ; +2 =  11
 	assert_branch_page @sample256_next
-	jsr swap_delay_384      ;384 = 395
-	jsr swap_delay_24       ;+24 = 419
-	nop                     ; +2 = 421
-	nop                     ; +2 = 423
-	nop                     ; +2 = 425
-	nop                     ; +2 = 427
-	jmp @sample             ; +3 = 430
+	jsr swap_delay_48       ;+48 =  59
+	jsr swap_delay_12       ;+12 =  71
+	nop                     ; +2 =  73
+	jmp @sample             ; +3 =  76
 @sample256_next:
 	;beq @sample256_next    ; +3 =  12
-	jsr swap_delay_384      ;384 = 396
-	jsr swap_delay_24       ;+24 = 420
-	dec dmc_loops           ; +5 = 425
-	bne @sample256          ; +3 = 428
+	jsr swap_delay_48       ;+48 =  60
+	nop                     ; +2 =  62
+	nop                     ; +2 =  64
+	nop                     ; +2 =  66
+	dec dmc_loops           ; +5 =  71
+	bne @sample256          ; +3 =  74
 	assert_branch_page @sample256
 	; finish with 0.5s silence
 	jmp dmc_finish_silence
@@ -323,14 +325,14 @@ tri_min_cycle:
 	sta $4015 ; 4 - 4 = 0 (triangle off)
 	rts
 
-; plays 2 second noise + 0.5s silence (period $B)
+; plays 2 second noise + 0.5s silence (period $6)
 ; Y = volume (0-15)
-noise_b:
+noise_6:
 	tya
 	ora #%00110000
 	sta $400C ; freeze length counter, constant volume
-	lda #$0B
-	sta $400E ; period = $B (not periodic)
+	lda #$06
+	sta $400E ; period = $6 (not periodic)
 	lda #$FF
 	sta $400F ; reload counter
 	ldy #120

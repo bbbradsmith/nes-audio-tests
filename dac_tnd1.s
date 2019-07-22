@@ -12,7 +12,7 @@
 ;   DMC level is set (0.5s)
 ;   Triangle at 440 Hz (2s)
 ;   Silent (0.5s)
-;   Noise at period $B (2s)
+;   Noise at period $6 (2s)
 ;   Silent (0.5s)
 ;
 ; When "silent" triangle is playing at max frequency (ultrasonic).
@@ -43,7 +43,7 @@ test_registers: ; $20
 .import tri_max
 .import tri_440
 .import tri_min_cycle
-.import noise_b
+.import noise_6
 .import square_440
 
 test_routines: ; $40
@@ -55,7 +55,7 @@ test_routines: ; $40
 .word tri_max
 .word tri_440
 .word tri_min_cycle
-.word noise_b
+.word noise_6
 .word square_440
 DMC_TRIANGLE   = $40 ; arg = 0,1,2,3
 DMC_NOISE      = $41 ; arg = 0-127
@@ -65,7 +65,7 @@ TRI_MIN        = $44 ; arg ignored
 TRI_MAX        = $45 ; arg ignored
 TRI_440        = $46 ; arg ignored
 TRI_MIN_CYCLE  = $47 ; arg ignored
-NOISE_B        = $48 ; arg = 0-15
+NOISE_6        = $48 ; arg = 0-15
 SQUARE_440     = $49 ; arg = 0-15
 
 test_data:
@@ -79,14 +79,14 @@ test_data:
 	.byte $11, (I*8) ; DMC level
 	.byte DELAY, 30
 	.byte TRI_440, 0
-	.byte NOISE_B, 15
+	.byte NOISE_6, 15
 .endrepeat
 ; 128 DMC levels
 .repeat 128, I
 	.byte $11, I
 	.byte DELAY, 30
 	.byte TRI_440, 0
-	.byte NOISE_B, 15
+	.byte NOISE_6, 15
 .endrepeat
 ; finish
 .byte LOOP

@@ -9,7 +9,7 @@
 ;    Triangle A440
 ;    DMC triangle simulation volume 15,30,60,120
 ; 00:14-01:31 - Noise and DMC
-;    Noise period $B volume 1-15
+;    Noise period $6 volume 1-15
 ;    DMC noise simulation volume 1-15*8
 ; 01:31-02:47 - Square and DMC
 ;    Square A440 volume 1-15
@@ -46,7 +46,7 @@ test_registers: ; $20
 .import tri_max
 .import tri_440
 .import tri_min_cycle
-.import noise_b
+.import noise_6
 .import square_440
 
 test_routines: ; $40
@@ -58,7 +58,7 @@ test_routines: ; $40
 .word tri_max
 .word tri_440
 .word tri_min_cycle
-.word noise_b
+.word noise_6
 .word square_440
 DMC_TRIANGLE   = $40 ; arg = 0,1,2,3
 DMC_NOISE      = $41 ; arg = 0-127
@@ -68,7 +68,7 @@ TRI_MIN        = $44 ; arg ignored
 TRI_MAX        = $45 ; arg ignored
 TRI_440        = $46 ; arg ignored
 TRI_MIN_CYCLE  = $47 ; arg ignored
-NOISE_B        = $48 ; arg = 0-15
+NOISE_6        = $48 ; arg = 0-15
 SQUARE_440     = $49 ; arg = 0-15
 
 test_data:
@@ -86,7 +86,7 @@ test_data:
 .byte DELAY, 90
 ; noise vs. DMC noise (15 volumes)
 .repeat 15, I
-	.byte NOISE_B, (I+1)
+	.byte NOISE_6, (I+1)
 .endrepeat
 .repeat 15, I
 	.byte DMC_NOISE, ((I+1)*8)

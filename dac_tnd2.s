@@ -9,7 +9,7 @@
 ;
 ; For each test (repeated 33 times):
 ;   Triangle is unhalted for ~1s + 1 waveform step
-;   Noise at period $B volumes 1, 8, 15
+;   Noise at period $6 volumes 1, 8, 15
 ;   DMC simulated noise volumes 8, 64, 120
 ;
 ; If played from reset the starting phase of the triangle will be 0,
@@ -44,7 +44,7 @@ test_registers: ; $20
 .import tri_max
 .import tri_440
 .import tri_min_cycle
-.import noise_b
+.import noise_6
 .import square_440
 
 test_routines: ; $40
@@ -56,7 +56,7 @@ test_routines: ; $40
 .word tri_max
 .word tri_440
 .word tri_min_cycle
-.word noise_b
+.word noise_6
 .word square_440
 DMC_TRIANGLE   = $40 ; arg = 0,1,2,3
 DMC_NOISE      = $41 ; arg = 0-127
@@ -66,7 +66,7 @@ TRI_MIN        = $44 ; arg ignored
 TRI_MAX        = $45 ; arg ignored
 TRI_440        = $46 ; arg ignored
 TRI_MIN_CYCLE  = $47 ; arg ignored
-NOISE_B        = $48 ; arg = 0-15
+NOISE_6        = $48 ; arg = 0-15
 SQUARE_440     = $49 ; arg = 0-15
 
 test_data:
@@ -79,9 +79,9 @@ test_data:
 .repeat 33
 	.byte TRI_MIN_CYCLE, 0
 	.byte DELAY, 30
-	.byte NOISE_B, 1
-	.byte NOISE_B, 8
-	.byte NOISE_B, 15
+	.byte NOISE_6, 1
+	.byte NOISE_6, 8
+	.byte NOISE_6, 15
 	.byte DMC_NOISE, 8
 	.byte DMC_NOISE, 64
 	.byte DMC_NOISE, 120
