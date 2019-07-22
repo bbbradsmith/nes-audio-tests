@@ -2,3 +2,4 @@
 *.flac
 *.mp3
 *.array
+*.npy
