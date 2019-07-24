@@ -45,7 +45,7 @@ def sum_squares(w, s0, s1):
 def rms_test(w, centre, width):
     s0 = int(centre - (width/2))
     s1 = s0 + int(width) - 1
-    return math.sqrt(sum_squares(w,s0,s1))
+    return math.sqrt(sum_squares(w,s0,s1)) / width
 
 def remap_reference(reference, start, end):
     ref_start = reference[0]
@@ -71,7 +71,7 @@ def table_2D(graph,yname,xname):
 def dac_square(filename, start, end):
     print("dac_square('%s',%d,%d)" % (filename, start, end))
     # reference [ start, end, 1s of silence, centre of 1st tone, centre of last tone ]
-    reference = [ 248593, 31023575, 342288, 464054, 30893207 ]
+    reference = [ 16420, 30791622, 112420, 232064, 30661055 ]
     reference = remap_reference(reference, start, end)
     # use cached results if they exist
     cache_filename = filename+"_%d_%d.array" % (start,end)
@@ -164,12 +164,12 @@ def dac_tnd0(filename, start, end):
     print("dac_tnd0('%s',%d,%d)" % (filename, start, end))
     # reference [ start, end, 1s of silence,
     #             ref triangle, 1st sim triangle, 4th sim triangle,
-    #             noise 1, noise 15, sim noise 1, sim noise 15,
+    #             noise 1, noise 15, sim noise 1, sim noise 127,
     #             ref apu, sim 440 1, sim 440 127
-    reference = [ 1068974, 24667483, 1748973,
-                  1164902, 1284676, 1644415,
-                  1836025, 3513115, 3633885, 5335652,
-                  9206205, 9325902, 24512552 ]
+    reference = [ 16420, 33418324, 93220,
+                  208013, 327850, 687581,
+                  879208, 2556569, 2676516, 17765293,
+                  17956832, 18076855, 33263128 ]
     reference = remap_reference(reference, start, end)
     # use cached results if they exist
     cache_filename = filename+"_%d_%d.npy" % (start,end)
@@ -184,7 +184,7 @@ def dac_tnd0(filename, start, end):
     noise1 = reference[6]
     noise15 = reference[7]
     dmcnoise1 = reference[8]
-    dmcnoise15 = reference[9]
+    dmcnoise127 = reference[9]
     refsquare = reference[10]
     dmcsquare1 = reference[11]
     dmcsquare127 = reference[12]
@@ -206,11 +206,11 @@ def dac_tnd0(filename, start, end):
         test_pos = noise1 + (i * stest)
         rms = rms_test(w,test_pos,swindow)
         results[1].append(rms)
-        stest = (dmcnoise15-dmcnoise1)/14
+    for i in range(127):
+        stest = (dmcnoise127-dmcnoise1)/126
         test_pos = dmcnoise1 + (i * stest)
         rms = rms_test(w,test_pos,swindow)
         results[2].append(rms)
-    for i in range(127):
         stest = (dmcsquare127-dmcsquare1)/126
         test_pos = dmcsquare1 + (i * stest)
         rms = rms_test(w,test_pos,swindow)
@@ -228,17 +228,17 @@ def dac_tnd0_blargg():
         results[0].append(tnd_blargg(7.5,0,15<<i)-tnd_blargg(7.5,0,0))
     for i in range(15):
         results[1].append(tnd_blargg(7.5,i+1,0)-tnd_blargg(7.5,0,0))
-        results[2].append(tnd_blargg(7.5,0,(i+1)*8)-tnd_blargg(7.5,0,0))
     for i in range(127):
+        results[2].append(tnd_blargg(7.5,0,i+1)-tnd_blargg(7.5,0,0))
         results[3].append(tnd_blargg(7.5,0,i+1)-tnd_blargg(7.5,0,0))
     return results
 
 def dac_tnd0_normalize(results):
     # normalize to references
     ma = results[4][0] # triangle reference
-    mb = results[1][14] # noise reference
-    mc = mb # noise reference
+    mc = results[2][126] # maximum volume reference
     md = results[3][126] # maximum volume reference
+    mb = mc # rescale noise channel to maximum DMC noise volume
     a = [v/ma for v in results[0]]
     b = [v/mb for v in results[1]]
     c = [v/mc for v in results[2]]
@@ -263,9 +263,12 @@ def dac_tnd0_plot_b(results, colour):
 
 def dac_tnd0_plot_c(results, colour):
     graph = dac_tnd0_normalize(results)
+    gy = graph[2]
+    gx = [r+16 for r in range(len(gy))]
+    pyplot.plot(gx,gy,color=colour,linewidth=1,label="noise")
     gy = graph[3]
     gx = [r+1 for r in range(len(gy))]
-    pyplot.plot(gx,gy,color=colour,linewidth=1)
+    pyplot.plot(gx,gy,color=colour,linewidth=1,label="square")
 
 #
 # dac_tnd1
@@ -274,7 +277,7 @@ def dac_tnd0_plot_c(results, colour):
 def dac_tnd1(filename, start, end):
     print("dac_tnd1('%s',%d,%d)" % (filename, start, end))
     # reference [ start, end, 1s of silence, centre of 1st tone (triangle), center of 2nd tone (noise), centre of last tone (noise) ]
-    reference = [ 787498, 38799093, 831480 ,5124435, 5243862, 38716919 ]
+    reference = [ 16421, 38124133, 93220, 4449446, 4568922, 38041631 ]
     reference = remap_reference(reference, start, end)
     # use cached results if they exist
     cache_filename = filename+"_%d_%d.array" % (start,end)
@@ -338,7 +341,7 @@ triangle = [ 15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0,0,1,2,3,4,5,6,7,8,9,10,11,12,
 def dac_tnd2(filename, start, end, phase):
     print("dac_tnd2('%s',%d,%d,%d)" % (filename, start, end, phase))
     # reference [ start, end, 1s of silence, centre of 1st tone (noise), center of 6th tone (dmc noise), centre of last tone (dmc noise) ]
-    reference = [ 207853, 26573373, 238912, 377668, 981382, 26443372 ]
+    reference = [ 16420, 26293080, 93220, 279723, 878622, 26162901 ]
     reference = remap_reference(reference, start, end)
     # use cached results if they exist
     cache_filename = filename+"_%d_%d.array" % (start,end)
@@ -412,7 +415,7 @@ def dac_tnd2_plot_b(results, colour):
 def dac_tnd3(filename, start, end):
     print("dac_tnd3('%s',%d,%d)" % (filename, start, end))
     # reference [ start, end, 1s of silence, centre of 1st tone, center of 15th tone, centre of last tone ]
-    reference = [ 399826, 29641830, 433277, 519843, 2197024, 29511148 ]
+    reference = [ 16420, 29354192, 93220, 232234, 1909385, 29223805 ] 
     reference = remap_reference(reference, start, end)
     # use cached results if they exist
     cache_filename = filename+"_%d_%d.array" % (start,end)
@@ -465,8 +468,8 @@ def dac_tnd3_plot(results, colour):
 # recordings analyzed
 #
 
-square_nes     = dac_square("dac_square_nes.wav", 248593, 31023575)
-square_famicom = dac_square("dac_square_famicom.wav", 203497, 30974739)
+#square_nes     = dac_square("dac_square_nes.wav", 248593, 31023575)
+#square_famicom = dac_square("dac_square_famicom.wav", 203497, 30974739)
 square_nsfplay = dac_square("dac_square_nsfplay.wav", 16420, 30791622)
 square_linear  = dac_square_linear()
 square_blargg  = dac_square_blargg()
@@ -476,53 +479,65 @@ square_blargg  = dac_square_blargg()
 dac_square_plot(square_linear ,"#0000FF")
 dac_square_plot(square_blargg ,"#0000FF")
 dac_square_plot(square_nsfplay,"#00FFFF")
-dac_square_plot(square_famicom,"#00FF00")
-dac_square_plot(square_nes    ,"#FF0000")
+#dac_square_plot(square_famicom,"#00FF00")
+#dac_square_plot(square_nes    ,"#FF0000")
 pyplot.show()
 pyplot.clf()
 
-tnd0_nes     = dac_tnd0("dac_tnd0_nes.wav", 1068974, 24667483)
+#tnd0_nes     = dac_tnd0("dac_tnd0_nes.wav", 1068974, 24667483)
+tnd0_nsfplay = dac_tnd0("dac_tnd0_nsfplay.wav", 16420, 33418324)
 tnd0_blargg  = dac_tnd0_blargg()
 dac_tnd0_plot_a(tnd0_blargg ,"#0000FF")
-dac_tnd0_plot_a(tnd0_nes    ,"#FF0000")
+dac_tnd0_plot_a(tnd0_nsfplay,"#00FFFF")
+#dac_tnd0_plot_a(tnd0_nes    ,"#FF0000")
 pyplot.show()
 pyplot.clf()
 dac_tnd0_plot_b(tnd0_blargg ,"#0000FF")
-dac_tnd0_plot_b(tnd0_nes    ,"#FF0000")
+dac_tnd0_plot_b(tnd0_nsfplay,"#00FFFF")
+#dac_tnd0_plot_b(tnd0_nes    ,"#FF0000")
 pyplot.show()
 pyplot.clf()
 dac_tnd0_plot_c(tnd0_blargg ,"#0000FF")
-dac_tnd0_plot_c(tnd0_nes    ,"#FF0000")
+dac_tnd0_plot_c(tnd0_nsfplay,"#00FFFF")
+#dac_tnd0_plot_c(tnd0_nes    ,"#FF0000")
 pyplot.show()
 pyplot.clf()
 
-tnd1_nes     = dac_tnd1("dac_tnd1_nes.wav", 787498, 38799093)
+#tnd1_nes     = dac_tnd1("dac_tnd1_nes.wav", 787498, 38799093)
+tnd1_nsfplay = dac_tnd1("dac_tnd1_nsfplay.wav", 16421, 38124133)
 tnd1_blargg  = dac_tnd1_blargg()
 dac_tnd1_plot_a(tnd1_blargg ,"#0000FF")
-dac_tnd1_plot_a(tnd1_nes    ,"#FF0000")
+dac_tnd1_plot_a(tnd1_nsfplay,"#00FFFF")
+#dac_tnd1_plot_a(tnd1_nes    ,"#FF0000")
 pyplot.show()
 pyplot.clf()
 dac_tnd1_plot_b(tnd1_blargg ,"#0000FF")
-dac_tnd1_plot_b(tnd1_nes    ,"#FF0000")
+dac_tnd1_plot_b(tnd1_nsfplay,"#00FFFF")
+#dac_tnd1_plot_b(tnd1_nes    ,"#FF0000")
 pyplot.show()
 pyplot.clf()
 
-tnd2_nes     = dac_tnd2("dac_tnd2_nes.wav", 207853, 26573373, 1)
+#tnd2_nes     = dac_tnd2("dac_tnd2_nes.wav", 207853, 26573373, 1)
+tnd2_nsfplay = dac_tnd2("dac_tnd2_nsfplay.wav", 16420, 26293080, 1)
 tnd2_blargg  = dac_tnd2_blargg()
 dac_tnd2_plot_a(tnd2_blargg ,"#0000FF")
-dac_tnd2_plot_a(tnd2_nes    ,"#FF0000")
+dac_tnd2_plot_a(tnd2_nsfplay,"#00FFFF")
+#dac_tnd2_plot_a(tnd2_nes    ,"#FF0000")
 pyplot.show()
 pyplot.clf()
 dac_tnd2_plot_b(tnd2_blargg ,"#0000FF")
-dac_tnd2_plot_b(tnd2_nes    ,"#FF0000")
+dac_tnd2_plot_b(tnd2_nsfplay,"#00FFFF")
+#dac_tnd2_plot_b(tnd2_nes    ,"#FF0000")
 pyplot.show()
 pyplot.clf()
 
-tnd3_nes     = dac_tnd3("dac_tnd3_nes.wav", 906118, 30147827)
-tnd3_famicom = dac_tnd3("dac_tnd3_famicom.wav", 399826, 29641830)
+#tnd3_nes     = dac_tnd3("dac_tnd3_nes.wav", 906118, 30147827)
+#tnd3_famicom = dac_tnd3("dac_tnd3_famicom.wav", 399826, 29641830)
+tnd3_nsfplay = dac_tnd3("dac_tnd3_nsfplay.wav", 16420, 29354192)
 tnd3_blargg  = dac_tnd3_blargg()
 dac_tnd3_plot(tnd3_blargg ,"#0000FF")
-dac_tnd3_plot(tnd3_famicom,"#00FF00")
-dac_tnd3_plot(tnd3_nes,    "#FF0000")
+dac_tnd3_plot(tnd3_nsfplay,"#00FFFF")
+#dac_tnd3_plot(tnd3_famicom,"#00FF00")
+#dac_tnd3_plot(tnd3_nes,    "#FF0000")
 pyplot.show()
 pyplot.clf()

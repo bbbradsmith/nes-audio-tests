@@ -5,8 +5,8 @@
 ;
 ; Test how DMC level affects noise and triangle
 ; 
-; 00:00-01:29 - DMC at levels 0-15*8 (short)
-; 01:29-13:11 - DMC at levels 0-127 (long)
+; 00:00-01:31 - DMC at levels 0-15*8 (short)
+; 01:31-13:13 - DMC at levels 0-127 (long)
 ;
 ; For each test:
 ;   DMC level is set (0.5s)
@@ -70,10 +70,11 @@ SQUARE_440     = $49 ; arg = 0-15
 
 test_data:
 .byte BUZZ, 50
+.byte DELAY, 30
 .byte INIT_APU, 0
 .byte DMC_NOISE_INIT, 0
 .byte TRI_MAX, 0
-.byte DELAY, 60
+.byte DELAY, 150
 ; 16 DMC levels
 .repeat 16, I
 	.byte $11, (I*8) ; DMC level

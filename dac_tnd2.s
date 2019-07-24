@@ -71,11 +71,12 @@ SQUARE_440     = $49 ; arg = 0-15
 
 test_data:
 .byte BUZZ, 50
+.byte DELAY, 30
 .byte INIT_APU, 0
 .byte DMC_NOISE_INIT, 0
 .byte TRI_MIN, 0
 .byte $15, %00001011 ; silence triangle at min frequency
-.byte DELAY, 60
+.byte DELAY, 150
 .repeat 33
 	.byte TRI_MIN_CYCLE, 0
 	.byte DELAY, 30

@@ -5,16 +5,13 @@
 ;
 ; Summary test of APU 2 DAC
 ;
-; 00:00-00:14 - Triangle and DMC
+; 00:00-00:15 - Triangle and DMC
 ;    Triangle A440
 ;    DMC triangle simulation volume 15,30,60,120
-; 00:14-01:31 - Noise and DMC
+; 00:15-06:11 - Noise and DMC
 ;    Noise period $6 volume 1-15
-;    DMC noise simulation volume 1-15*8
-; 01:31-02:47 - Square and DMC
-;    Square A440 volume 1-15
-;    DMC square simulation volume 1-15*8
-; 02:47-08:11 - Square DMC exhaustive
+;    DMC noise simulation volume 1-127
+; 06:11-11:35 - Square and DMC
 ;    Square A440 volume 15
 ;    DMC square simulation volume 1-127
 ;
@@ -73,10 +70,11 @@ SQUARE_440     = $49 ; arg = 0-15
 
 test_data:
 .byte BUZZ, 50
+.byte DELAY, 30
 .byte INIT_APU, 0
 .byte DMC_NOISE_INIT, 0
 .byte TRI_MAX, 0
-.byte DELAY, 60
+.byte DELAY, 150
 ; triangle vs. DMC triangle (4 volumes)
 .byte TRI_440, 0
 .byte DMC_TRIANGLE, 0
@@ -84,20 +82,12 @@ test_data:
 .byte DMC_TRIANGLE, 2
 .byte DMC_TRIANGLE, 3
 .byte DELAY, 90
-; noise vs. DMC noise (15 volumes)
+; noise vs. DMC noise (15 volumes, 127)
 .repeat 15, I
 	.byte NOISE_6, (I+1)
 .endrepeat
-.repeat 15, I
-	.byte DMC_NOISE, ((I+1)*8)
-.endrepeat
-.byte DELAY, 90
-; APU square vs DMC square (15 volumes)
-.repeat 15, I
-	.byte SQUARE_440, (I+1)
-.endrepeat
-.repeat 15, I
-	.byte DMC_SQUARE, ((I+1)*8)
+.repeat 127, I
+	.byte DMC_NOISE, (I+1)
 .endrepeat
 .byte DELAY, 90
 ; APU square (15 only) vs DMC square (127 volumes)

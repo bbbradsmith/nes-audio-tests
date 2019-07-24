@@ -5,7 +5,7 @@
 ;
 ; Test of how DMC level affects noise
 ;
-; 00:00-10:08 - DMC at levels 0-15*8
+; 00:00-10:11 - DMC at levels 0-15*8
 ; For each test:
 ;   DMC level is set  (0.5s)
 ;   Noise at period $6 volumes 1-15 (each 2s + 0.5s silence)
@@ -65,10 +65,11 @@ SQUARE_440     = $49 ; arg = 0-15
 
 test_data:
 .byte BUZZ, 50
+.byte DELAY, 30
 .byte INIT_APU, 0
 .byte DMC_NOISE_INIT, 0
 .byte TRI_MAX, 0
-.byte DELAY, 60
+.byte DELAY, 150
 .repeat 16, I
 	.byte $11, (I*8) ; DMC level
 	.byte DELAY, 30
