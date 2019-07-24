@@ -94,6 +94,18 @@ fds_reset:
 		sta $00, X
 		inx
 		bne :-
+	; palette $0D for slightly less PPU noise interference
+	lda #$3F
+	sta $2006
+	lda #$00
+	sta $2006
+	tax
+	lda #$0D
+	:
+		sta $2007
+		inx
+		cpx #32
+		bcc :-
 	; begin SWAP
 	jsr swap_load_partial
 	jsr swap_init_apu
