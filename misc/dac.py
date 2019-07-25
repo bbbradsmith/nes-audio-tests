@@ -7,6 +7,17 @@
 #    one marking the start of the test, and another marking the end of it.
 # 3. Run dac_xxx( filename, start, end ) to analyze the test.
 #
+# tnd2 also has a "phase" parameter for the triangle
+# observe the start of the first triangle burst after reset,
+# you should find 15 steps down, with a short plateau after the 15th step,
+# this is considered starting at phase 1 of 32.
+#
+# (Each triangle burst advances the phase by 1 step, at the end of the first
+# step it has advanced from phase 0 to 1, so the starting phase is 1.)
+#
+# If reset was not used, the triangle may start at some random phase
+# you will have to manually determine.
+#
 
 import wave
 import struct
@@ -53,6 +64,11 @@ def remap_reference(reference, start, end):
     rescale = (end - start) / (ref_end - ref_start)
     return [start + ((x-ref_start) * rescale) for x in reference]
 
+def table_1D(graph,name):
+    print("index, %s\n" % (name))
+    for i in range(len(graph)):
+        print("%d, %8.4f" % (i,graph[i]))
+
 def table_2D(graph,yname,xname):
     s = "%s \ %s" % (yname,xname)
     for i in range(len(graph[0])):
@@ -63,6 +79,10 @@ def table_2D(graph,yname,xname):
         for v in graph[i]:
             s += ", %8.4f" % v
         print(s)
+
+def plot(gx,gy,colour):
+    pyplot.plot(gx,gy,color=colour,linewidth=1)
+    #pyplot.scatter(gx,gy,color=colour,s=0.2)
 
 #
 # dac_square test
@@ -126,7 +146,7 @@ def dac_square_plot(results, colour):
             if i == 0: # skip zeroes
                 gy = gy[1:]
                 gx = gx[1:]
-        pyplot.plot(gx,gy,color=colour,linewidth=0.5,label="%d"%i)
+        plot(gx,gy,colour)
 
 # graph of how symmetrical the output is (i.e. are the two squares identical)
 # each element in the table is compared to the average of its diagonal
@@ -152,6 +172,12 @@ def dac_square_symmetry(name, results):
 #
 
 def tnd_blargg(t, n, d):
+    if t == 7.5:
+        # special case "7.5" is ultrasonic triangle, take average of all values
+        accum = 0
+        for i in range(0,16):
+            accum += tnd_blargg(i,n,d)
+        return accum/16
     if t == 0 and n == 0 and d == 0:
         return 0
     return 159.79 / ((1 / ((t/8227) + (n/12241) + (d/22638))) + 100)
@@ -250,25 +276,25 @@ def dac_tnd0_plot_a(results, colour):
     graph = dac_tnd0_normalize(results)
     gy = graph[0]
     gx = [r for r in range(len(gy))]
-    pyplot.plot(gx,gy,color=colour,linewidth=1)
+    plot(gx,gy,colour)
 
 def dac_tnd0_plot_b(results, colour):
     graph = dac_tnd0_normalize(results)
     gy = graph[1]
     gx = [r+1 for r in range(len(gy))]
-    pyplot.plot(gx,gy,color=colour,linewidth=1,label="noise")
+    plot(gx,gy,colour)
     gy = graph[2]
     gx = [r+16 for r in range(len(gy))]
-    pyplot.plot(gx,gy,color=colour,linewidth=1,label="dmc")
+    plot(gx,gy,colour)
 
 def dac_tnd0_plot_c(results, colour):
     graph = dac_tnd0_normalize(results)
     gy = graph[2]
-    gx = [r+16 for r in range(len(gy))]
-    pyplot.plot(gx,gy,color=colour,linewidth=1,label="noise")
+    gx = [r+1 for r in range(len(gy))]
+    plot(gx,gy,colour)
     gy = graph[3]
     gx = [r+1 for r in range(len(gy))]
-    pyplot.plot(gx,gy,color=colour,linewidth=1,label="square")
+    plot(gx,gy,colour)
 
 #
 # dac_tnd1
@@ -276,8 +302,10 @@ def dac_tnd0_plot_c(results, colour):
 
 def dac_tnd1(filename, start, end):
     print("dac_tnd1('%s',%d,%d)" % (filename, start, end))
-    # reference [ start, end, 1s of silence, centre of 1st tone (triangle), center of 2nd tone (noise), centre of last tone (noise) ]
-    reference = [ 16421, 38124133, 93220, 4449446, 4568922, 38041631 ]
+    # reference [ start, end, 1s of silence,
+    #             centre of (2nd group) 1st tone (triangle), center of 2nd tone (noise), centre of last tone (noise) ]
+    reference = [ 16421, 38124133, 93220,
+                  4449446, 4568922, 38041631 ]
     reference = remap_reference(reference, start, end)
     # use cached results if they exist
     cache_filename = filename+"_%d_%d.array" % (start,end)
@@ -324,13 +352,13 @@ def dac_tnd1_plot_a(results, colour):
     graph = dac_tnd1_normalize(results)
     gy = graph[0]
     gx = [r for r in range(len(gy))]
-    pyplot.plot(gx,gy,color=colour,linewidth=1)
+    plot(gx,gy,colour)
 
 def dac_tnd1_plot_b(results, colour):
     graph = dac_tnd1_normalize(results)
     gy = graph[1]
     gx = [r for r in range(len(gy))]
-    pyplot.plot(gx,gy,color=colour,linewidth=1)
+    plot(gx,gy,colour)
 
 #
 # dac_tnd2
@@ -399,14 +427,14 @@ def dac_tnd2_plot_a(results, colour):
     for i in range(0,3):
         gy = graph[i]
         gx = [r for r in range(len(gy))]
-        pyplot.plot(gx,gy,color=colour,linewidth=1,label="%d"%i)
+        plot(gx,gy,colour)
 
 def dac_tnd2_plot_b(results, colour):
     graph = dac_tnd2_normalize(results)
     for i in range(3,6):
         gy = graph[i]
         gx = [r for r in range(len(gy))]
-        pyplot.plot(gx,gy,color=colour,linewidth=1,label="%d"%i)
+        plot(gx,gy,colour)
 
 #
 # dac_tnd3
@@ -461,83 +489,106 @@ def dac_tnd3_plot(results, colour):
         gy = graph[i]
         if ADJUST:
             gy = [graph[i][r]*(15/(r+1)) for r in range(15)]
-        gx = [r+1 for r in range(len(gy))]
-        pyplot.plot(gx,gy,color=colour,linewidth=1,label="%d"%i)
+            pass
+        gx = [r for r in range(len(gy))]
+        plot(gx,gy,colour)
 
 #
 # recordings analyzed
 #
 
-#square_nes     = dac_square("dac_square_nes.wav", 248593, 31023575)
-#square_famicom = dac_square("dac_square_famicom.wav", 203497, 30974739)
+# collect data
+
+square_nes     = dac_square("dac_square_nes.wav", 474193, 31249139)
+square_famicom = dac_square("dac_square_famicom.wav", 251009, 31026263)
 square_nsfplay = dac_square("dac_square_nsfplay.wav", 16420, 30791622)
 square_linear  = dac_square_linear()
 square_blargg  = dac_square_blargg()
+
+tnd0_nes     = dac_tnd0("dac_tnd0_nes.wav", 189264, 33590919)
+tnd0_famicom = dac_tnd0("dac_tnd0_famicom.wav", 197219, 33599126)
+tnd0_nsfplay = dac_tnd0("dac_tnd0_nsfplay.wav", 16420, 33418324)
+tnd0_blargg  = dac_tnd0_blargg()
+
+tnd1_nes     = dac_tnd1("dac_tnd1_nes.wav", 562881, 38670319)
+tnd1_famicom = dac_tnd1("dac_tnd1_famicom.wav", 203404, 38311172)
+tnd1_nsfplay = dac_tnd1("dac_tnd1_nsfplay.wav", 16421, 38124133)
+tnd1_blargg  = dac_tnd1_blargg()
+
+tnd2_nes     = dac_tnd2("dac_tnd2_nes.wav", 363541, 26640001, 1)
+tnd2_famicom = dac_tnd2("dac_tnd2_famicom.wav", 354780, 26631487, 1)
+tnd2_nsfplay = dac_tnd2("dac_tnd2_nsfplay.wav", 16420, 26293080, 1)
+tnd2_blargg  = dac_tnd2_blargg()
+
+tnd3_nes     = dac_tnd3("dac_tnd3_nes.wav", 451682, 29789228)
+tnd3_famicom = dac_tnd3("dac_tnd3_famicom.wav", 259986, 29597818)
+tnd3_nsfplay = dac_tnd3("dac_tnd3_nsfplay.wav", 16420, 29354192)
+tnd3_blargg  = dac_tnd3_blargg()
+
+# construct model
+
+# analyze data
+
 #dac_square_symmetry("square_nes",square_nes)
 #dac_square_symmetry("square_famicom",square_famicom)
 #dac_square_symmetry("square_nsfplay",square_nsfplay)
+
 dac_square_plot(square_linear ,"#0000FF")
 dac_square_plot(square_blargg ,"#0000FF")
 dac_square_plot(square_nsfplay,"#00FFFF")
-#dac_square_plot(square_famicom,"#00FF00")
-#dac_square_plot(square_nes    ,"#FF0000")
+dac_square_plot(square_nes    ,"#FF0000")
+dac_square_plot(square_famicom,"#00FF00")
 pyplot.show()
 pyplot.clf()
 
-#tnd0_nes     = dac_tnd0("dac_tnd0_nes.wav", 1068974, 24667483)
-tnd0_nsfplay = dac_tnd0("dac_tnd0_nsfplay.wav", 16420, 33418324)
-tnd0_blargg  = dac_tnd0_blargg()
 dac_tnd0_plot_a(tnd0_blargg ,"#0000FF")
 dac_tnd0_plot_a(tnd0_nsfplay,"#00FFFF")
-#dac_tnd0_plot_a(tnd0_nes    ,"#FF0000")
+dac_tnd0_plot_a(tnd0_nes    ,"#FF0000")
+dac_tnd0_plot_a(tnd0_famicom,"#00FF00")
 pyplot.show()
 pyplot.clf()
 dac_tnd0_plot_b(tnd0_blargg ,"#0000FF")
 dac_tnd0_plot_b(tnd0_nsfplay,"#00FFFF")
-#dac_tnd0_plot_b(tnd0_nes    ,"#FF0000")
+dac_tnd0_plot_b(tnd0_nes    ,"#FF0000")
+dac_tnd0_plot_b(tnd0_famicom,"#00FF00")
 pyplot.show()
 pyplot.clf()
 dac_tnd0_plot_c(tnd0_blargg ,"#0000FF")
 dac_tnd0_plot_c(tnd0_nsfplay,"#00FFFF")
-#dac_tnd0_plot_c(tnd0_nes    ,"#FF0000")
+dac_tnd0_plot_c(tnd0_nes    ,"#FF0000")
+dac_tnd0_plot_c(tnd0_famicom,"#00FF00")
 pyplot.show()
 pyplot.clf()
 
-#tnd1_nes     = dac_tnd1("dac_tnd1_nes.wav", 787498, 38799093)
-tnd1_nsfplay = dac_tnd1("dac_tnd1_nsfplay.wav", 16421, 38124133)
-tnd1_blargg  = dac_tnd1_blargg()
 dac_tnd1_plot_a(tnd1_blargg ,"#0000FF")
 dac_tnd1_plot_a(tnd1_nsfplay,"#00FFFF")
-#dac_tnd1_plot_a(tnd1_nes    ,"#FF0000")
+dac_tnd1_plot_a(tnd1_nes    ,"#FF0000")
+dac_tnd1_plot_a(tnd1_famicom,"#00FF00")
 pyplot.show()
 pyplot.clf()
 dac_tnd1_plot_b(tnd1_blargg ,"#0000FF")
 dac_tnd1_plot_b(tnd1_nsfplay,"#00FFFF")
-#dac_tnd1_plot_b(tnd1_nes    ,"#FF0000")
+dac_tnd1_plot_b(tnd1_nes    ,"#FF0000")
+dac_tnd1_plot_b(tnd1_famicom,"#00FF00")
 pyplot.show()
 pyplot.clf()
 
-#tnd2_nes     = dac_tnd2("dac_tnd2_nes.wav", 207853, 26573373, 1)
-tnd2_nsfplay = dac_tnd2("dac_tnd2_nsfplay.wav", 16420, 26293080, 1)
-tnd2_blargg  = dac_tnd2_blargg()
 dac_tnd2_plot_a(tnd2_blargg ,"#0000FF")
 dac_tnd2_plot_a(tnd2_nsfplay,"#00FFFF")
-#dac_tnd2_plot_a(tnd2_nes    ,"#FF0000")
+dac_tnd2_plot_a(tnd2_nes    ,"#FF0000")
+dac_tnd2_plot_a(tnd2_famicom,"#00FF00")
 pyplot.show()
 pyplot.clf()
 dac_tnd2_plot_b(tnd2_blargg ,"#0000FF")
 dac_tnd2_plot_b(tnd2_nsfplay,"#00FFFF")
-#dac_tnd2_plot_b(tnd2_nes    ,"#FF0000")
+dac_tnd2_plot_b(tnd2_nes    ,"#FF0000")
+dac_tnd2_plot_b(tnd2_famicom,"#00FF00")
 pyplot.show()
 pyplot.clf()
 
-#tnd3_nes     = dac_tnd3("dac_tnd3_nes.wav", 906118, 30147827)
-#tnd3_famicom = dac_tnd3("dac_tnd3_famicom.wav", 399826, 29641830)
-tnd3_nsfplay = dac_tnd3("dac_tnd3_nsfplay.wav", 16420, 29354192)
-tnd3_blargg  = dac_tnd3_blargg()
 dac_tnd3_plot(tnd3_blargg ,"#0000FF")
 dac_tnd3_plot(tnd3_nsfplay,"#00FFFF")
-#dac_tnd3_plot(tnd3_famicom,"#00FF00")
-#dac_tnd3_plot(tnd3_nes,    "#FF0000")
+dac_tnd3_plot(tnd3_nes,    "#FF0000")
+dac_tnd3_plot(tnd3_famicom,"#00FF00")
 pyplot.show()
 pyplot.clf()
