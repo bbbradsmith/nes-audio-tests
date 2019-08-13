@@ -18,7 +18,7 @@
 ; 5 tone
 ;   halt by $4008, $400B, 1/4 frame delay
 ; 6 tone
-;   halt by $4008, $400b, immediate
+;   halt by $4008, $400B, immediate
 ; 7 tone
 ;   halt by $4015
 ;   resume by $4015 (no tone)
@@ -32,10 +32,21 @@
 ;   silence by $00 to $4008
 ;   tone
 ;   silence by $00 to $4008/$400B
-;10 tone
-;   silence by linear counter expiry (1/2 second)
-;   tone by $400B refresh of linear counter
-;   silence by linear counter expiry (1/2 second)
+;10 tone 1/2 second (silenced by linear counter expiry)
+;   silence
+;   tone by $400B refresh of linear counter, 1/2 second
+;   silence
+;11 tone (1/2 second)
+;   silence (ignores intervening $4008 write that would extend tone)
+;   tone (1/2 second, ignores intervening $4008 write that would shorten it)
+;   silence
+;   silence (wakeup by $4008 alone fails, reload not currently set)
+;   tone (wakeup by $400B, reload flag is held)
+;   silence (silenced by $4008 alone because of reload flag still set, linear counter halted)
+;   tone 1/2 second (demonstrates $4008 without high bit can wakeup if in halt+reload state)
+;   silence
+;   tone 1/2 second (woken by $400B)
+;   silence
 
 .include "swap.inc"
 
@@ -149,6 +160,26 @@ test_data:
 .byte $0B, $F0
 .byte DELAY, 120
 .byte $0B, $F0 ; will cause linear counter to reload to 124 again
+.byte DELAY, 120
+
+; verify that $4008 won't reload on its own when linear counter isn't halted
+.byte $0B, $F0 ; wake the triangle with reload of 124 (31 frames)
+.byte DELAY, 15
+.byte $08, 124 ; note that this does not extend the envelope
+.byte DELAY, 105
+.byte $0B, $F0 ; wake the triangle with 124
+.byte DELAY, 15
+.byte $08, $00 ; note that 0 does not silence the triangle early here
+.byte DELAY, 105
+.byte $08, $FF ; note that this doesn't wake the triangle (halted but not in reload)
+.byte DELAY, 60
+.byte $0B, $F0 ; sets reload, wakes triangle
+.byte DELAY, 60
+.byte $08, $80 ; note that this silences the triangle (reload still set)
+.byte DELAY, 60
+.byte $08, 124 ; note that this wakes the triangle
+.byte DELAY, 120
+.byte $0B, $F0 ; wake the triangle
 .byte DELAY, 120
 
 .byte LOOP
