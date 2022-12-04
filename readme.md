@@ -31,8 +31,9 @@ Other tests: (these are not survey tests, merely part of my personal ongoing inv
 - **nsf_init_y** - 8 bit beep readout of Y register value passed to INIT.
 - **tri_silence** - Tests various ways of silencing the triangle, clarifies interaction between $4008/400B and linear counter.
 - **test_vrc7** - Examines properties of the VRC7 "test" register $0F.
-- **dac_square** - Tests the linearity of the square channel DAC (work in progress)
-- **dac_tnd0,1,2,3** - Tests the linearity of the triangle/noise/DMC channel DAC (work in progress)
+- **test_n163_longwave** - Tests long period values of N163 often neglected by emulators.
+- **dac_square** - Tests the linearity of the square channel DAC. (Work in progress.)
+- **dac_tnd0,1,2,3** - Tests the linearity of the triangle/noise/DMC channel DAC. (Work in progress.)
 
 NSF2 tests: (to test NSF players for [NSF2](https://wiki.nesdev.com/w/index.php/NSF2) support)
 - **nsf2_init_play** - The non-returning INIT and NMI-driven PLAY feature.
