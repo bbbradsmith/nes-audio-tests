@@ -21,19 +21,19 @@ Some people are uncomfortable with the idea of hotswapping cartridges. It has be
 
 Other tests: (these are not survey tests, merely part of my personal ongoing investigations)
 - **patch_vrc7** - Comparison of prospective VRC7 built-in patch set against the actual set. ([reference recording](http://rainwarrior.ca/projects/nes/patch_vrc7_nukeykt.flac))
-- **clip_vrc7** - Demonstration of clipping in the VRC7 amplifier.
-- **clip_5b** - Demonstration of compression in the 5B amplifier.
+- **clip_vrc7** - Demonstration of clipping in the VRC7 amplifier. ([commentary](https://forums.nesdev.org/viewtopic.php?p=224897#p224897))
+- **clip_5b** - Demonstration of nonlinearity in the 5B amplifier. ([commentary](https://forums.nesdev.org/viewtopic.php?p=225012#p225012))
 - **noise_vrc7** - White noise to characterize the VRC7 filters.
 - **noise_5b** - White noise to characterize the 5B filters, other frequency tests.
-- **sweep_5b** - Frequency sweep and noise to characterize the 5B filters. (Good for APU too.)
+- **sweep_5b** - Frequency sweep and noise to characterize the 5B filters. (Good for APU too. [commentary](https://forums.nesdev.org/viewtopic.php?p=225699#p225699))
 - **envelope_5b** - Frequency and phase reset verification for 5B envelope, other frequency verification.
 - **phase_5b** - Tone phase behaviour for 5B.
 - **nsf_init_y** - 8 bit beep readout of Y register value passed to INIT.
 - **tri_silence** - Tests various ways of silencing the triangle, clarifies interaction between $4008/400B and linear counter.
 - **test_vrc7** - Examines properties of the VRC7 "test" register $0F.
 - **test_n163_longwave** - Tests long period values of N163 often neglected by emulators.
-- **dac_square** - Tests the linearity of the square channel DAC ([commentary](https://forums.nesdev.org/viewtopic.php?t=24288))
-- **dac_tnd0,1,2,3** - Tests the linearity of the triangle/noise/DMC channel DAC ([commentary](https://forums.nesdev.org/viewtopic.php?t=24288))
+- **dac_square** - Tests the linearity of the square channel DAC. ([commentary](https://forums.nesdev.org/viewtopic.php?t=24288))
+- **dac_tnd0,1,2,3** - Tests the linearity of the triangle/noise/DMC channel DAC. ([commentary](https://forums.nesdev.org/viewtopic.php?t=24288))
 
 NSF2 tests: (to test NSF players for [NSF2](https://wiki.nesdev.com/w/index.php/NSF2) support)
 - **nsf2_init_play** - The non-returning INIT and NMI-driven PLAY feature.
