@@ -27,7 +27,8 @@ import numpy
 import os.path
 
 BASE_FREQ = 1789772 / 4064 # approximated 440Hz
-ADJUST = True # relative graph rather than absolute, easier to evaluate
+ADJUST = True # some graphs become relative rather than absolute, easier to evaluate
+NOISE_DMC = False # show DMC noise vs noise on graph
 
 #
 # utilities
@@ -127,15 +128,24 @@ def squ_blargg(s0,s1):
         return 0
     return 95.88 / ((8128 / (s0 + s1)) + 100)
 
+def squ_model(s0,s1,model):
+    if s0 == 0 and s1 == 0:
+        return 0
+    return 1 / ((model / (so + s1)) + 1)
+
 def dac_square_blargg():
     return [[squ_blargg(y,x) for x in range(16)] for y in range(16)]
+
+def dec_square_model(model):
+    return [[squ_model(y,x,model) for x in range(16)] for y in range(16)]
 
 def dac_square_normalize(results):
     # normalize based on average of single square at full volume
     m = (results[0][15] + results[15][0]) / 2
     return [[v/m for v in row] for row in results]
 
-def dac_square_plot(results, colour):
+def dac_square_plot_a(results, colour):
+    # combined overlapping graph of square curves, all combinations mixed
     graph = dac_square_normalize(results)
     # plot results
     for i in range(len(graph)):
@@ -147,6 +157,24 @@ def dac_square_plot(results, colour):
                 gy = gy[1:]
                 gx = gx[1:]
         plot(gx,gy,colour)
+
+def dac_square_plot_b(results, colour):
+    # simple graph of square curves, isolating both channels
+    graph = dac_square_normalize(results)
+    gy = graph[0]
+    gx = range(len(gy))
+    if ADJUST:
+        gy = [gy[r] * (15/max(r,1)) for r in range(16)]
+        gy = gy[1:]
+        gx = gx[1:]
+    plot(gx,gy,colour)
+    gy = [graph[i][0] for i in range(len(graph))]
+    gx = [r+16 for r in range(len(gy))]
+    if ADJUST:
+        gy = [gy[r] * (15/max(r,1)) for r in range(16)]
+        gy = gy[1:]
+        gx = gx[1:]
+    plot(gx,gy,colour)
 
 # graph of how symmetrical the output is (i.e. are the two squares identical)
 # each element in the table is compared to the average of its diagonal
@@ -182,6 +210,16 @@ def tnd_blargg(t, n, d):
         return 0
     return 159.79 / ((1 / ((t/8227) + (n/12241) + (d/22638))) + 100)
 
+def tnd_model(t, n, d, model):
+    if t == 7.5:
+        accum = 0
+        for i in range(0,16):
+            accum += tnd_model(i,n,d,model)
+        return accum/16
+    if t == 0 and n == 0 and d == 0:
+        return 0
+    return 1 / ((1 / ((t/model[0]) + (n/model[1]) + (d/model[2]))) + 1)
+
 #
 # dac_tnd0
 #
@@ -200,7 +238,7 @@ def dac_tnd0(filename, start, end):
     # use cached results if they exist
     cache_filename = filename+"_%d_%d.npy" % (start,end)
     if os.path.exists(cache_filename) and (os.path.getmtime(filename) < os.path.getmtime(cache_filename)):
-        return numpy.load(cache_filename)
+        return numpy.load(cache_filename,allow_pickle=True)
     # load waveform and calculate test positions
     (w,sr) = loadwave(filename)
     silence = reference[2]
@@ -259,6 +297,20 @@ def dac_tnd0_blargg():
         results[3].append(tnd_blargg(7.5,0,i+1)-tnd_blargg(7.5,0,0))
     return results
 
+def dac_tnd0_model(model,model_square):
+    refs = [
+        tnd_model(15,0,0,model)-tnd_model(0,0,0,model),
+        squ_model(15,0,model_square)-squ_model(0,0,model_square) ]
+    results = [[],[],[],[],refs]
+    for i in range(4):
+        results[0].append(tnd_model(7.5,0,15<<i,model)-tnd_model(7.5,0,0,model))
+    for i in range(15):
+        results[1].append(tnd_model(7.5,i+1,0,model)-tnd_model(7.5,0,0,model))
+    for i in range(127):
+        results[2].append(tnd_model(7.5,0,i+1,model)-tnd_model(7.5,0,0,model))
+        results[3].append(tnd_model(7.5,0,i+1,model)-tnd_model(7.5,0,0,model))
+    return results
+
 def dac_tnd0_normalize(results):
     # normalize to references
     ma = results[4][0] # triangle reference
@@ -273,21 +325,27 @@ def dac_tnd0_normalize(results):
     return [a,b,c,d,e]
 
 def dac_tnd0_plot_a(results, colour):
+    # four DMC triangle simulated volumes vs. triangle channel
     graph = dac_tnd0_normalize(results)
     gy = graph[0]
     gx = [r for r in range(len(gy))]
     plot(gx,gy,colour)
 
 def dac_tnd0_plot_b(results, colour):
+    # 15 noise volumes, 127 DMC noise volumes
     graph = dac_tnd0_normalize(results)
     gy = graph[1]
     gx = [r+1 for r in range(len(gy))]
+    if ADJUST and not NOISE_DMC:
+        gy = [gy[i] * 15 / gx[i] for i in range(len(gy))]
     plot(gx,gy,colour)
-    gy = graph[2]
-    gx = [r+16 for r in range(len(gy))]
-    plot(gx,gy,colour)
+    if NOISE_DMC:
+        gy = graph[2]
+        gx = [r+16 for r in range(len(gy))]
+        plot(gx,gy,colour)
 
 def dac_tnd0_plot_c(results, colour):
+    # 127 DMC noise volumes + 127 DMC square volumes (overlapping)
     graph = dac_tnd0_normalize(results)
     gy = graph[2]
     gx = [r+1 for r in range(len(gy))]
@@ -340,6 +398,11 @@ def dac_tnd1_blargg():
     b = [tnd_blargg(7.5,15,i)-tnd_blargg(7.5,0,i) for i in range(128)]
     return [a, b]
 
+def dac_tnd1_model(model):
+    a = [tnd_model(15,0,i,model)-tnd_model(0,0,i,model) for i in range(128)]
+    b = [tnd_model(7.5,15,i,model)-tnd_model(7.5,0,i,model) for i in range(128)]
+    return [a, b]
+
 def dac_tnd1_normalize(results):
     # normalize with maximum volume as 1
     ma = results[0][0]
@@ -349,12 +412,14 @@ def dac_tnd1_normalize(results):
     return [a,b]
 
 def dac_tnd1_plot_a(results, colour):
+    # triangle attenuation due to DMC
     graph = dac_tnd1_normalize(results)
     gy = graph[0]
     gx = [r for r in range(len(gy))]
     plot(gx,gy,colour)
 
 def dac_tnd1_plot_b(results, colour):
+    # noise attenuation due to DMC
     graph = dac_tnd1_normalize(results)
     gy = graph[1]
     gx = [r for r in range(len(gy))]
@@ -410,6 +475,15 @@ def dac_tnd2_blargg():
     f = [tnd_blargg(i,0,120)-tnd_blargg(i,0,0) for i in range(16)]
     return [a,b,c,d,e,f]
 
+def dac_tnd2_model(model):
+    a = [tnd_model(i,1,0,model)-tnd_model(i,0,0,model) for i in range(16)]
+    b = [tnd_model(i,8,0,model)-tnd_model(i,0,0,model) for i in range(16)]
+    c = [tnd_model(i,15,0,model)-tnd_model(i,0,0,model) for i in range(16)]
+    d = [tnd_model(i,0,8,model)-tnd_model(i,0,0,model) for i in range(16)]
+    e = [tnd_model(i,0,64,model)-tnd_model(i,0,0,model) for i in range(16)]
+    f = [tnd_model(i,0,120,model)-tnd_model(i,0,0,model) for i in range(16)]
+    return [a,b,c,d,e,f]
+
 def dac_tnd2_normalize(results):
     # normalize with maximum volume as 1
     mc = results[2][0]
@@ -423,6 +497,7 @@ def dac_tnd2_normalize(results):
     return [a,b,c,d,e,f]
 
 def dac_tnd2_plot_a(results, colour):
+    # noise attenuation due to triangle
     graph = dac_tnd2_normalize(results)
     for i in range(0,3):
         gy = graph[i]
@@ -430,6 +505,7 @@ def dac_tnd2_plot_a(results, colour):
         plot(gx,gy,colour)
 
 def dac_tnd2_plot_b(results, colour):
+    # DMC attenuation due to triangle
     graph = dac_tnd2_normalize(results)
     for i in range(3,6):
         gy = graph[i]
@@ -477,12 +553,16 @@ def dac_tnd3(filename, start, end):
 def dac_tnd3_blargg():
     return [[tnd_blargg(7.5,i+1,j*8)-tnd_blargg(7.5,0,j*8) for i in range(15)] for j in range(16)]
 
+def dac_tnd3_model(model):
+    return [[tnd_model(7.5,i+1,j*8,model)-tnd_model(7.5,0,j*8,model) for i in range(15)] for j in range(16)]
+
 def dac_tnd3_normalize(results):
     # normalize with maximum volume noise as 1
     m = results[0][14]
     return [[v/m for v in row] for row in results]
     
 def dac_tnd3_plot(results, colour):
+    # noise attenuation (15 levels) due to DMC (16 levels)
     graph = dac_tnd3_normalize(results)
     # plot results
     for i in range(len(graph)):
@@ -527,17 +607,27 @@ tnd3_blargg  = dac_tnd3_blargg()
 
 # construct model
 
+
+
 # analyze data
 
 #dac_square_symmetry("square_nes",square_nes)
 #dac_square_symmetry("square_famicom",square_famicom)
 #dac_square_symmetry("square_nsfplay",square_nsfplay)
 
-dac_square_plot(square_linear ,"#0000FF")
-dac_square_plot(square_blargg ,"#0000FF")
-dac_square_plot(square_nsfplay,"#00FFFF")
-dac_square_plot(square_nes    ,"#FF0000")
-dac_square_plot(square_famicom,"#00FF00")
+dac_square_plot_a(square_linear ,"#0000FF")
+dac_square_plot_a(square_blargg ,"#0000FF")
+dac_square_plot_a(square_nsfplay,"#00FFFF")
+dac_square_plot_a(square_nes    ,"#FF0000")
+dac_square_plot_a(square_famicom,"#00FF00")
+pyplot.show()
+pyplot.clf()
+
+dac_square_plot_b(square_linear ,"#0000FF")
+dac_square_plot_b(square_blargg ,"#0000FF")
+dac_square_plot_b(square_nsfplay,"#00FFFF")
+dac_square_plot_b(square_nes    ,"#FF0000")
+dac_square_plot_b(square_famicom,"#00FF00")
 pyplot.show()
 pyplot.clf()
 
