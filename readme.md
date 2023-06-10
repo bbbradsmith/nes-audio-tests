@@ -45,6 +45,7 @@ NSF2 tests: (to test NSF players for [NSF2](https://wiki.nesdev.com/w/index.php/
 Notes:
 - swap.s - common code for hotswap tests
 - [lfo_vrc7.s](https://github.com/bbbradsmith/nes-audio-tests/tree/c5051051cb0c50edfa799e55747f14189a2628d9) - retracted test using VRC7 chip reset, which did reset tremolo LFO but not vibrato. Test register at $0F can do this better, see test_vrc7.s instead.
+- NESDev Forums: [Famicom expansion hardware recordings](https://forums.nesdev.org/viewtopic.php?t=8639) - old thread with some hardware recordings still available.
 
 Building:
 - Get CC65 and put it in the cc65/ folder. Link: http://cc65.github.io/cc65/
